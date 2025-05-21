@@ -99,7 +99,7 @@ static int	add_export(t_env **env, t_cmd *cmd)
 		after = cmd->args[i];
 		if (name_var_valid(before) == 0)
 		{
-			ft_printf("minishell: export: '%s' :not a valid identifier",
+			printf("minishell: export: '%s' :not a valid identifier",
 				before);
 			return (EXIT_FAILURE);
 		}
@@ -124,7 +124,7 @@ int	ft_export(t_env **env, t_cmd *cmd)
 		cpy = sort_t_env(cpy);
 		while (cpy)
 		{
-			ft_printf("declare -x %s=\"%s\"\n", cpy->key, cpy->value);
+			printf("declare -x %s=\"%s\"\n", cpy->key, cpy->value);
 			cpy = cpy->next;
 		}
 	}

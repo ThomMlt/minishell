@@ -54,7 +54,7 @@ void	parse_redir_append(t_parse *cmd, char *line)
 	t_parse_redir_append	*redir_append;
 
 	redir_append = malloc(sizeof(t_parse_redir_append));
-	tmp = ft_minishell_split_str(line, ">>");
+	tmp = ft_minishell_split_char(line, '>');
 	redir_append->line = ft_strdup_split(tmp);
 	cmd->redir_append = redir_append;
 	clean_split(tmp);
@@ -66,7 +66,7 @@ void	parse_redir_heredoc(t_parse *cmd, char *line)
 	t_parse_redir_heredoc	*redir_heredoc;
 
 	redir_heredoc = malloc(sizeof(t_parse_redir_heredoc));
-	tmp = ft_minishell_split_str(line, "<<");
+	tmp = ft_minishell_split_char(line, '<');
 	redir_heredoc->line = ft_strdup_split(tmp);
 	cmd->redir_heredoc = redir_heredoc;
 	clean_split(tmp);

@@ -6,7 +6,7 @@
 #    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/24 20:55:23 by tmillot           #+#    #+#              #
-#    Updated: 2025/05/12 17:44:37 by tmillot          ###   ########.fr        #
+#    Updated: 2025/05/17 13:18:34 by tmillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,16 +51,15 @@ SRCS = ft_atoi.c \
 		ft_putnbr_count.c \
 		ft_putnbr_hexa.c \
 		ft_putstr_count.c \
-
-BONUS = ft_lstnew_bonus.c \
-			ft_lstadd_front_bonus.c \
-			ft_lstsize_bonus.c \
-			ft_lstlast_bonus.c \
-			ft_lstadd_back_bonus.c \
-			ft_lstdelone_bonus.c \
-			ft_lstclear_bonus.c \
-			ft_lstiter_bonus.c \
-			ft_lstmap_bonus.c \
+		ft_lstnew_bonus.c \
+		ft_lstadd_front_bonus.c \
+		ft_lstsize_bonus.c \
+		ft_lstlast_bonus.c \
+		ft_lstadd_back_bonus.c \
+		ft_lstdelone_bonus.c \
+		ft_lstclear_bonus.c \
+		ft_lstiter_bonus.c \
+		ft_lstmap_bonus.c \
 
 OBJS = ${SRCS:.c=.o}
 

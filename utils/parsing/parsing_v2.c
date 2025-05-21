@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_v2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 17:55:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/04/12 17:55:23 by lidbaha          ###   ########.fr       */
+/*   Updated: 2025/05/17 23:02:16 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ t_parse_redir	*init_redir(void)
 	return (redir);
 }
 
-void	parse_v2(char *line)
+int	parse_v2(char *line, t_env *env, int last_status)
 {
 	int				i;
 	char			**pipe;
@@ -84,7 +84,7 @@ void	parse_v2(char *line)
 
 	i = 0;
 	if (line[0] == '\0')
-		return ;
+		return (-1);
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\'' || line[i] == '\"')
@@ -97,7 +97,7 @@ void	parse_v2(char *line)
 		i++;
 	}
 	if (check_if_valid(line, '|') == 1)
-		return ; //TODO: return error (missing pipe argument)
+		return (-1); //TODO: return error (missing pipe argument)
 	pipe = ft_divide_char(line, '|');
 	redir = init_redir();
 	parse_redir(redir, pipe);
@@ -105,4 +105,7 @@ void	parse_v2(char *line)
 	fill_t_cmd(redir, cmd);
 	clean_pipe(pipe);
 	clean_redir(redir);
+	// print_cmd_debug(cmd);
+	last_status = ft_exec(cmd, env, last_status);
+	return (last_status);
 }

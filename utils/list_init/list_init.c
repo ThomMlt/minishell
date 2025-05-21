@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fill_cmd.c                                         :+:      :+:    :+:   */
+/*   list_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/13 22:17:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/17 12:04:05 by tmillot          ###   ########.fr       */
+/*   Created: 2025/05/18 06:57:23 by lidbaha           #+#    #+#             */
+/*   Updated: 2025/05/18 06:57:54 by lidbaha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,30 @@ t_cmd	*init_cmd(void)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->next = NULL;
-	cmd->infile = NULL;
-	cmd->outfile = NULL;
 
 	return (cmd);
 }
 
-// void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
-// {
-// 	t_parse_redir	*current;
-// 	t_cmd			*current_cmd;
+t_redir	*init_cmd_redir(void)
+{
+	t_redir	*redir;
 
-// 	current = redir;
-// 	current_cmd = cmd;
-// 	//TODO: fill cmd
-// }
+	redir = malloc(sizeof(t_redir));
+	if (!redir)
+		return (NULL);
+	redir->file = NULL;
+	redir->next = NULL;
+	return (redir);
+}
+
+t_parse_redir	*init_redir(void)
+{
+	t_parse_redir	*redir;
+
+	redir = malloc(sizeof(t_parse_redir));
+	if (!redir)
+		return (NULL);
+	redir->line = NULL;
+	redir->next = NULL;
+	return (redir);
+}

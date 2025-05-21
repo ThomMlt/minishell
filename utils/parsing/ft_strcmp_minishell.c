@@ -1,27 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   ft_strcmp_minishell.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 19:05:42 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/14 19:17:25 by tmillot          ###   ########.fr       */
+/*   Created: 2025/05/18 06:17:23 by lidbaha           #+#    #+#             */
+/*   Updated: 2025/05/18 06:17:54 by lidbaha          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-int	ft_pwd(void)
+int	ft_strcmp_minishell(char *s1, char *s2)
 {
-	char	buffer[4096];
+	int	i;
 
-	if (getcwd(buffer, sizeof(buffer)) == NULL)
+	if (strlen(s1) != strlen(s2))
+		return (0);
+	i = 0;
+	while (s1[i] != '\0')
 	{
-		perror("getcwd");
-		return (CODE_FAIL);
+		if (s1[i] != s2[i])
+			return (0);
+		i++;
 	}
-	ft_putstr_fd(buffer, 1);
-	ft_putchar_fd('\n', 1);
-	return (CODE_SUCCESS);
+	return (1);
 }

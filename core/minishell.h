@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/10 13:40:07 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/21 16:24:06 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,16 +152,17 @@ typedef struct s_parse_redir
 t_cmd						*init_cmd(void);
 t_parse_redir				*init_redir(void);
 void						parse(char *line);
-void						parse_v2(char *line);
-void						fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
 void						parse_pipe(t_parse *cmd, char *line);
 char						**ft_divide_char(char *line, char sep);
 char						**ft_divide_str(char *line, char *sep);
+int							ft_strcmp_minishell(char *s1, char *s2);
 void						parse_redir_input(t_parse *cmd, char *line);
+void						fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
 void						parse_redir_output(t_parse *cmd, char *line);
 void						parse_redir_append(t_parse *cmd, char *line);
-void						parse_redir(t_parse_redir *redir, char **pipe);
 void						parse_redir_heredoc(t_parse *cmd, char *line);
+void						parse_redir(t_parse_redir *redir, char **pipe);
+int							parse_v2(char *line, t_env *env, int last_status);
 
 /* quotes */
 char						*skip_quotes(char *line, char quote);
@@ -201,6 +202,11 @@ int							check_expand_quote(int *quote, char c);
 void    					trim_quotes(t_cmd *cmd);
 void    					find_and_trim_quote(char **arg);
 
+/* Handle here doc, return name file */
+char	*get_here_doc(char *str);
+
+void	print_cmd_debug(t_cmd *cmd);
+
 /* built-in */
 int		ft_pwd(void);
 int		ft_echo(t_cmd *cmd);
@@ -216,6 +222,7 @@ void	is_a_directory(char *str);
 void	command_not_found(char *cmd);
 void	permission_denied(char *file);
 void	no_such_file_or_directory(char *cmd);
+int		exec_builtin(t_cmd *cmd, t_env *env);
 
 /* executing */
 int		ft_exec(t_cmd *cmd, t_env *env, int exit_code);
@@ -240,7 +247,8 @@ int		redirect_management(t_cmd *cmd, int *pipe_fd, int prev_fd);
 void	free_t_cmd(t_cmd *cmd);
 void	free_tab_char(char **tab);
 void	free_t_redir(t_redir *list);
-int		ft_exit_exec(int exit_code, t_cmd *cmd, char **envp, char *path_cmd);
+void		ft_exit_exec(t_cmd *cmd);
+void	free_path(char *path_cmd);
 
 /* built-in utils */
 int	    count_tab_char(char **tab);
@@ -248,5 +256,6 @@ char	*get_before_egal(char *str);
 char	*get_after_egal(char *str);
 int		is_built_in(char *str);
 int		name_var_valid(char *str);
+void	ft_exit_child_process(int code_status, char *path_cmd, char **envp);
 
 #endif

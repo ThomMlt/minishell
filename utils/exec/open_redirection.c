@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 16:25:36 by tmillot           #+#    #+#             */
-/*   Updated: 2025/04/30 11:23:51 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/20 21:35:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,3 +88,5 @@ int	last_outfile(t_cmd *cmd)
 	}
 	return (fd);
 }
+
+/* attention le break ne suffit pas ici */

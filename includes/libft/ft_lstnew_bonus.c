@@ -1,38 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fill_cmd.c                                         :+:      :+:    :+:   */
+/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/13 22:17:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/17 12:04:05 by tmillot          ###   ########.fr       */
+/*   Created: 2024/10/27 08:42:21 by tmillot           #+#    #+#             */
+/*   Updated: 2024/10/27 09:51:25 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "libft.h"
 
-t_cmd	*init_cmd(void)
+t_list	*ft_lstnew(void *content)
 {
-	t_cmd	*cmd;
+	t_list	*dest;
 
-	cmd = malloc(sizeof(t_cmd));
-	if (!cmd)
+	dest = malloc(sizeof(t_list));
+	if (!dest)
 		return (NULL);
-	cmd->args = NULL;
-	cmd->next = NULL;
-	cmd->infile = NULL;
-	cmd->outfile = NULL;
-
-	return (cmd);
+	dest->content = content;
+	dest->next = NULL;
+	return (dest);
 }
-
-// void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
-// {
-// 	t_parse_redir	*current;
-// 	t_cmd			*current_cmd;
-
-// 	current = redir;
-// 	current_cmd = cmd;
-// 	//TODO: fill cmd
-// }
