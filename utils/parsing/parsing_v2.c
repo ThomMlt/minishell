@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 17:55:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/17 23:02:16 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 13:07:19 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 
 	i = 0;
 	if (line[0] == '\0')
-		return (-1);
+		return (last_status);
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\'' || line[i] == '\"')
@@ -97,7 +97,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 		i++;
 	}
 	if (check_if_valid(line, '|') == 1)
-		return (-1); //TODO: return error (missing pipe argument)
+		return (last_status); //TODO: return error (missing pipe argument)
 	pipe = ft_divide_char(line, '|');
 	redir = init_redir();
 	parse_redir(redir, pipe);

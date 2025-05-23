@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 10:48:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/21 15:17:10 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/22 16:27:14 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,4 +197,6 @@ void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 			current_cmd->next = NULL;
 		current_redir = current_redir->next;
 	}
+	printf("fin du t_fill\n");
+	print_cmd_debug(cmd);
 }

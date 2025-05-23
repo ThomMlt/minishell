@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 14:00:58 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/21 13:12:20 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 03:56:04 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	management_infile(t_cmd *cmd, int prev_fd)
 	in_fd = last_infile(cmd);
 	if (in_fd == -1)
 		return (CODE_FAIL);
-	return (dup2(in_fd, 0), close(in_fd), CODE_SUCCESS); 
+	return (dup2(in_fd, 0), close(in_fd), CODE_SUCCESS);
 }
 
 static int	management_outfile(t_cmd *cmd, int *pipe_fd)

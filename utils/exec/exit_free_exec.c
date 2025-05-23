@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:00:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/21 16:23:23 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 04:02:10 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,37 +50,28 @@ void	free_t_redir(t_redir *list)
 	}
 }
 
-void	free_t_cmd(t_cmd *cmd)
-{
-	t_cmd	*tmp;
-
-	tmp = NULL;
-	while (cmd != NULL)
-	{
-		tmp = cmd;
-		free_tab_char(cmd->args);
-		if (cmd->infile != NULL)
-			free_t_redir(cmd->infile);
-		if (cmd->outfile != NULL)
-			free_t_redir(cmd->outfile);
-		cmd = cmd->next;
-		free(tmp);
-	}
-}
-
 void	free_path(char *path_cmd)
 {
 	if (path_cmd != NULL)
 		free(path_cmd);
 }
 
-void	ft_exit_exec(t_cmd *cmd)
+int	wait_and_free(int status, t_cmd *cmd)
 {
+	int	last_status;
+
+	last_status = 0;
+	if (cmd == NULL)
+		return (status);
 	if (cmd != NULL)
+	{
+		last_status = wait_children(status, cmd);
 		free_t_cmd(cmd);
+	}
+	return (last_status);
 }
 
-void	ft_exit_child_process(int code_status, char *path_cmd, char **envp)
+void	ft_exit_child(int code_status, char *path_cmd, char **envp)
 {
 	if (path_cmd != NULL)
 		free_path(path_cmd);

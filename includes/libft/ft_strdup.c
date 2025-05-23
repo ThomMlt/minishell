@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 15:21:15 by tmillot           #+#    #+#             */
-/*   Updated: 2024/10/21 15:48:56 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/22 22:27:29 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ char	*ft_strdup(const char *s)
 	int		i;
 
 	i = 0;
+	if (s == NULL)
+		return (NULL);
 	dup = malloc(ft_strlen(s) * sizeof(char) + 1);
 	if (!dup)
 		return (0);

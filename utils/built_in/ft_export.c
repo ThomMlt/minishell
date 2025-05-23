@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 20:18:37 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/12 17:48:07 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 03:47:58 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,49 +41,29 @@ static t_env	*sort_t_env(t_env *env)
 	return (env);
 }
 
-int	name_var_valid(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (ft_isalpha(str[i]) == 0 && str[i] != '_')
-		return (0);
-	i++;
-	while (str[i] != '\0')
-	{
-		if (ft_isalnum(str[i]) == 0 && str[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 static void	add_var_to_env(char *key, char *value, t_env **env)
 {
 	t_env	*current;
 	t_env	*new_node;
+	t_env	*prev;
 
 	current = *env;
-	while (current->next)
+	prev = NULL;
+	while (current != NULL)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			free(current->value);
 			current->value = ft_strdup(value);
 			return ;
 		}
+		prev = current;
 		current = current->next;
 	}
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return ;
-	new_node->key = ft_strdup(key);
-	if (value == NULL)
-		new_node->value = NULL;
+	new_node = new_node_env(key, value);
+	if (prev)
+		prev->next = new_node;
 	else
-		new_node->value = ft_strdup(value);
-	new_node->next = NULL;
-	current->next = new_node;
+		*env = new_node;
 }
 
 static int	add_export(t_env **env, t_cmd *cmd)
@@ -95,11 +75,11 @@ static int	add_export(t_env **env, t_cmd *cmd)
 	i = 1;
 	while (cmd->args[i])
 	{
-		before = cmd->args[i];
-		after = cmd->args[i];
+		before = get_before_egal(cmd->args[i]);
+		after = get_after_egal(cmd->args[i]);
 		if (name_var_valid(before) == 0)
 		{
-			printf("minishell: export: '%s' :not a valid identifier",
+			ft_printf("minishell: export: '%s' :not a valid identifier\n",
 				before);
 			return (EXIT_FAILURE);
 		}
@@ -114,19 +94,24 @@ static int	add_export(t_env **env, t_cmd *cmd)
 
 int	ft_export(t_env **env, t_cmd *cmd)
 {
-	t_env	*cpy;
+	t_env	*sorted;
+	t_env	*head_sorted;
 	int		exit_status;
 
-	cpy = *env;
 	exit_status = CODE_SUCCESS;
-	if (cmd->args[1] == NULL && ft_strcmp(cmd->args[0], "export") == 0)
+	if (cmd->args[1] == NULL)
 	{
-		cpy = sort_t_env(cpy);
-		while (cpy)
+		sorted = sort_t_env(copy_export(*env));
+		head_sorted = sorted;
+		while (sorted)
 		{
-			printf("declare -x %s=\"%s\"\n", cpy->key, cpy->value);
-			cpy = cpy->next;
+			if (sorted->value != NULL)
+				printf("declare -x %s=\"%s\"\n", sorted->key, sorted->value);
+			else
+				printf("declare -x %s\n", sorted->key);
+			sorted = sorted->next;
 		}
+		free_env(head_sorted);
 	}
 	else
 		exit_status = add_export(env, cmd);

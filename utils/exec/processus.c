@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/21 18:41:15 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 13:13:29 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ int	exec_builtin(t_cmd *cmd, t_env *env)
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
 		return (ft_export(&env, cmd));
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return (ft_unset(cmd, &env));
+		return (ft_unset(cmd, &env), ft_printf("Builtin premier node env : %s\n", env->key), 0);
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return (ft_exit(cmd, 0));
+		return (ft_exit(cmd, env, 0));
 	return (1);
 }
 
@@ -53,18 +53,18 @@ int	child_process(t_env *env, t_cmd *cmd, char **envp, char *path_cmd)
 	struct stat	data;
 
 	if (*cmd->args[0] == '.' || *cmd->args[0] == '/')
-		ft_exit_child_process(run_executable(cmd, envp), path_cmd, envp);
+		ft_exit_child(run_executable(cmd, envp), path_cmd, envp);
 	else if (cmd->builtin == true)
-		ft_exit_child_process(exec_builtin(cmd, env), path_cmd, envp);
+		ft_exit_child(exec_builtin(cmd, env), path_cmd, envp);
 	else if (path_cmd == NULL)
-		ft_exit_child_process(127, path_cmd, envp);
+		ft_exit_child(127, path_cmd, envp);
 	else if (stat(path_cmd, &data) != 0)
 		return (perror("stat"), CODE_FAIL);
 	else if (S_ISREG(data.st_mode) == 0)
 		return (is_a_directory(cmd->args[0]), 126);
 	else if (execve(path_cmd, cmd->args, envp) == -1)
 		perror("execve");
-	return (ft_exit_child_process(CODE_FAIL, path_cmd, envp), CODE_FAIL);
+	return (ft_exit_child(CODE_FAIL, path_cmd, envp), CODE_FAIL);
 }
 
 int	ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd)
@@ -72,10 +72,9 @@ int	ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd)
 	char	*path_cmd;
 	int		redir;
 	char	**envp;
-	pid_t	pid;
 
-	// if (env == NULL && cmd->args[0] != NULL && is_built_in(*cmd->args) == FAIL)
-	// 	return (no_such_file_or_directory(cmd->args[0]), 127);
+	if (env == NULL && cmd->args[0] != NULL && is_built_in(*cmd->args) == FAIL)
+		return (no_such_file_or_directory(cmd->args[0]), 127);
 	path_cmd = NULL;
 	envp = NULL;
 	if (cmd->args[0] != NULL && *cmd->args[0] != '.'
@@ -84,18 +83,15 @@ int	ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd)
 		path_cmd = find_cmd_path(env, cmd);
 		envp = env_tab_char(env);
 	}
-	pid = fork();
-	if (pid == -1)
+	cmd->pid = fork();
+	if (cmd->pid == -1)
 		return (perror("fork"), CODE_FAIL);
-	if (pid != 0)
+	if (cmd->pid != 0)
 		return (CODE_SUCCESS);
 	redir = redirect_management(cmd, pipe_fd, prev_fd);
 	if (redir == CODE_SUCCESS && cmd->args[0])
-		child_process(env, cmd, envp, path_cmd);
-	ft_exit_child_process(redir, path_cmd, envp);
+		ft_exit_child(child_process(env, cmd, envp, path_cmd), path_cmd, envp);
+	else
+		ft_exit_child(redir, path_cmd, envp);
 	return (CODE_SUCCESS);
 }
-
-// if (redir == CODE_SUCCESS && cmd->args[0] != NULL)
-// 	redir = child_process(env, cmd, envp, path_cmd);
-// ft_exit_exec(redir, cmd, envp, path_cmd);

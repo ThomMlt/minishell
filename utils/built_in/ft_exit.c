@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/04/30 11:23:07 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 03:41:18 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,21 @@ int	ft_check_atoll(const char *str, int *err)
 	return ((int)((res * (unsigned long long)neg) % 255));
 }
 
-void	exit_code(t_cmd *cmd, int exit_code, int do_exit)
+void	exit_code(t_cmd *cmd, t_env *env, int exit_code, int do_exit)
 {
 	ft_putstr_fd("exit\n", 1);
 	if (do_exit == 0)
 	{
 		if (cmd != NULL)
+		{
 			free_t_cmd(cmd);
+			free_env(env);
+		}
 		exit(exit_code);
 	}
 }
 
-int	ft_exit(t_cmd *cmd, int exit_status)
+int	ft_exit(t_cmd *cmd, t_env *env, int exit_status)
 {
 	int	err;
 	int	size;
@@ -66,10 +69,10 @@ int	ft_exit(t_cmd *cmd, int exit_status)
 		if (err == -1)
 		{
 			ft_putstr_fd(ERR_NUM_EXIT, 2);
-			return (exit_code(cmd, 2, 0), 2);
+			return (exit_code(cmd, env, 2, 0), 2);
 		}
 		else if (err == 0 && size == 2)
-			return (exit_code(cmd, exit_status, 0), exit_status);
+			return (exit_code(cmd, env, exit_status, 0), exit_status);
 		else
 		{
 			ft_putstr_fd(ERR_ARG_EXIT, 2);
@@ -77,5 +80,5 @@ int	ft_exit(t_cmd *cmd, int exit_status)
 		}
 	}
 	else
-		return (exit_code(cmd, 0, 0), 0);
+		return (exit_code(cmd, env, 0, 0), 0);
 }

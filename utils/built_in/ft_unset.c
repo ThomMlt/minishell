@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 15:13:10 by thomas            #+#    #+#             */
-/*   Updated: 2025/04/11 13:48:58 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 13:00:14 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ static void	rm_node(char *to_rm, t_env **env)
 			if (prev != NULL)
 				prev->next = current->next;
 			else
-				*env = current->next;
+			{
+				*env = (*env)->next;
+				printf("premier node env : %s\n", (*env)->key);
+			}
 			free(current->key);
 			free(current->value);
 			free(current);
@@ -45,8 +48,10 @@ int	ft_unset(t_cmd *cmd, t_env **env)
 	while (cmd->args[i] != NULL)
 	{
 		rm_node(cmd->args[i], env);
+		
 		i++;
 	}
+	printf("AAAAAA premier node env : %s\n", (*env)->key);
 	return (CODE_SUCCESS);
 }
 

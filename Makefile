@@ -6,7 +6,7 @@
 #    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 15:23:37 by lidbaha           #+#    #+#              #
-#    Updated: 2025/05/17 20:51:08 by tmillot          ###   ########.fr        #
+#    Updated: 2025/05/23 04:04:25 by tmillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ SOURCES = core/minishell.c \
 		  utils/built_in/ft_cd.c \
 		  utils/exec/executing.c \
 		  utils/exec/processus.c \
+		  utils/exec/free_shell.c \
 		  utils/exec/trim_quote.c \
 		  utils/built_in/ft_env.c \
 		  utils/built_in/ft_pwd.c \
