@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/16 16:20:05 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/29 10:59:04 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,34 +15,59 @@
 void	made_new_file(int *fd, char **name)
 {
 	static int	nb_file = 0;
+	char		*str;
+	char		*number_file;
 
-	*name = ft_strjoin("/tmp/here_doc_", ft_itoa(nb_file));
+	number_file = ft_itoa(nb_file);
+	str = ft_strjoin("/tmp/here_doc_", number_file);
+	*name = ft_strdup(str);
 	*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	free(str);
+	free(number_file);
 	nb_file++;
 }
 
-void	fill_here_doc_file(int fd, char *delimitor)
+int	if_limiter(char *line, char *limiter)
 {
-	char	*str;
+	if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
+		&& ft_strlen(limiter) == ft_strlen(line) - 1)
+		return (0);
+	return (1);
+}
 
-	while (1)
-	{
-		str = readline("> ");
-		if (str == NULL)
-		{
-			ft_printf("bash: warning: here-document delimited"
-				" by end-of-file (wanted `%s')\n", delimitor);
-			break ;
-		}
-		if (ft_strcmp(str, delimitor) == 0)
-		{
-			free(str);
-			break ;
-		}
-		ft_putstr_fd(str, fd);
-		ft_putchar_fd('\n', fd);
-		free(str);
-	}
+void	setup_signal_false(void)
+{
+	if (g_signal == true)
+		g_signal = false;
+}
+
+int	fill_here_doc_file(int fd, char *delimitor)
+{
+    char *line;
+    
+    setup_signal_heredoc();
+    while (1)
+    {
+        write(1, "> ", 2); 
+        line = get_next_line(0);
+        if (g_signal == true)
+			return (setup_signal_false(), free_path(line), 0);
+        if (line == NULL)
+        {
+            ft_printf("bash: warning: here-document delimited"
+                     " by end-of-file (wanted `%s')\n", delimitor);
+            break ;
+        }
+        if (if_limiter(line, delimitor) == 0)
+        {
+            free(line);
+            break ;
+        }
+        ft_putstr_fd(line, fd);
+        free(line);
+    }
+    setup_signal_false();
+	return (1);
 }
 
 char	*get_here_doc(char *str)
@@ -57,6 +82,7 @@ char	*get_here_doc(char *str)
 	if (here_doc_fd == -1)
 		return (ft_printf("error to create a tmp file\n"), NULL);
 	fill_here_doc_file(here_doc_fd, delimitor);
+	free(delimitor);
 	close(here_doc_fd);
 	return (file_name);
 }

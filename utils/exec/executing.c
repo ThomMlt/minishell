@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 13:07:50 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/29 12:05:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ int	wait_children(int status, t_cmd *cmd)
 			last_status = 128 + WTERMSIG(cur_status);
 		current = current->next;
 	}
+	free_t_cmd_nowhere(cmd);
 	return (last_status % 255);
 }
 
@@ -78,7 +79,7 @@ int	is_special_build_in_parent(char **cmd)
 	return (1);
 }
 
-int	ft_exec(t_cmd *cmd, t_env *env, int last_status)
+int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 	int		pipe_fd[2];
@@ -89,7 +90,7 @@ int	ft_exec(t_cmd *cmd, t_env *env, int last_status)
 	prev_fd = STDIN_FILENO;
 	current = cmd;
 	if (current->next == NULL && is_special_build_in_parent(current->args) == 0)
-		return (exec_builtin(current, env), ft_printf("BBBB premier node env : %s\n", env->key), 0);
+		return (exec_builtin(current, env));
 	while (current != NULL)
 	{
 		if (pipe(pipe_fd) == -1)

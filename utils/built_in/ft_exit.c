@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 03:41:18 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:17:23 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	ft_check_atoll(const char *str, int *err)
 	return ((int)((res * (unsigned long long)neg) % 255));
 }
 
-void	exit_code(t_cmd *cmd, t_env *env, int exit_code, int do_exit)
+void	exit_code(t_cmd *cmd, t_env **env, int exit_code, int do_exit)
 {
 	ft_putstr_fd("exit\n", 1);
 	if (do_exit == 0)
@@ -55,7 +55,7 @@ void	exit_code(t_cmd *cmd, t_env *env, int exit_code, int do_exit)
 	}
 }
 
-int	ft_exit(t_cmd *cmd, t_env *env, int exit_status)
+int	ft_exit(t_cmd *cmd, t_env **env, int exit_status)
 {
 	int	err;
 	int	size;

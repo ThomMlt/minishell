@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 06:57:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/18 06:57:54 by lidbaha          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:08:20 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ t_cmd	*init_cmd(void)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->next = NULL;
+	cmd->infile = NULL;
+	cmd->outfile = NULL;
+	cmd->prev = NULL;
 
 	return (cmd);
 }
@@ -55,7 +58,7 @@ t_parse_redir	*init_redir(void)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/16 16:20:05 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/28 10:05:24 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +67,15 @@ t_parse_redir	*init_redir(void)
 void	made_new_file(int *fd, char **name)
 {
 	static int	nb_file = 0;
+	char		*str;
+	char		*number_file;
 
-	*name = ft_strjoin("/tmp/here_doc_", ft_itoa(nb_file));
+	number_file = ft_itoa(nb_file);
+	str = ft_strjoin("/tmp/here_doc_", number_file);
+	*name = ft_strdup(str);
 	*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	free(str);
+	free(number_file);
 	nb_file++;
 }
 
@@ -76,6 +85,7 @@ void	fill_here_doc_file(int fd, char *delimitor)
 
 	while (1)
 	{
+		setup_signal(3);
 		str = readline("> ");
 		if (str == NULL)
 		{
@@ -106,6 +116,7 @@ char	*get_here_doc(char *str)
 	if (here_doc_fd == -1)
 		return (ft_printf("error to create a tmp file\n"), NULL);
 	fill_here_doc_file(here_doc_fd, delimitor);
+	free(delimitor);
 	close(here_doc_fd);
 	return (file_name);
 }
@@ -838,7 +849,7 @@ void	parse(char *line)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 22:17:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/17 12:04:05 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 17:58:49 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -855,6 +866,7 @@ t_cmd	*init_cmd(void)
 	cmd->next = NULL;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
+	cmd->prev = NULL;
 
 	return (cmd);
 }
@@ -875,7 +887,7 @@ t_cmd	*init_cmd(void)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 17:55:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/22 15:33:40 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/27 11:47:57 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -944,7 +956,7 @@ t_parse_redir	*init_redir(void)
 	return (redir);
 }
 
-int	parse_v2(char *line, t_env *env, int last_status)
+int	parse_v2(char *line, t_env **env, int last_status)
 {
 	int				i;
 	char			**pipe;
@@ -952,7 +964,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 	t_cmd			*cmd;
 
 	i = 0;
-	if (line[0] == '\0')
+	if (line[0] == '\0' || line == NULL)
 		return (last_status);
 	while (line[i] != '\0')
 	{
@@ -975,6 +987,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 	clean_pipe(pipe);
 	clean_redir(redir);
 	// print_cmd_debug(cmd);
+	cmd = cmd;
 	last_status = ft_exec(cmd, env, last_status);
 	return (last_status);
 }
@@ -986,18 +999,18 @@ int	parse_v2(char *line, t_env *env, int last_status)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 12:10:09 by tmillot           #+#    #+#             */
-/*   Updated: 2025/04/30 11:23:47 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 19:28:25 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-static int	size_struct_env(t_env *env)
+static int	size_struct_env(t_env **env)
 {
 	int		count;
 	t_env	*current;
 
-	current = env;
+	current = *env;
 	count = 0;
 	while (current != NULL)
 	{
@@ -1029,17 +1042,19 @@ static char	*join_key_and_value(char *key, char *value)
 	return (res);
 }
 
-char	**env_tab_char(t_env *env)
+char	**env_tab_char(t_env **env, char *path_cmd)
 {
 	int		size;
 	char	**tab_char;
 	int		i;
 	t_env	*current;
 
+	if (path_cmd == NULL)
+		return (NULL);
 	size = size_struct_env(env);
 	tab_char = malloc((size + 1) * sizeof(char *));
 	i = 0;
-	current = env;
+	current = *env;
 	while (current != NULL)
 	{
 		tab_char[i] = join_key_and_value(current->key, current->value);
@@ -1184,13 +1199,13 @@ int	redirect_management(t_cmd *cmd, int *pipe_fd, int prev_fd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:15:48 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/12 14:07:03 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:01:20 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-void	expand_and_trim_redir(t_redir *redirection, t_env *env, int last_status)
+void	expand_and_trim_redir(t_redir *redirection, t_env **env, int last_status)
 {
 	t_redir		*current;
 	int			quote;
@@ -1213,7 +1228,7 @@ void	expand_and_trim_redir(t_redir *redirection, t_env *env, int last_status)
 	}
 }
 
-void	expand_and_trim_cmd(t_cmd *cmd, t_env *env, int last_status)
+void	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 
@@ -1237,20 +1252,20 @@ void	expand_and_trim_cmd(t_cmd *cmd, t_env *env, int last_status)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 04:01:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 11:29:19 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/26 16:08:59 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-void	free_env(t_env *env)
+void	free_env(t_env **env)
 {
 	t_env	*tmp;
 
-	while (env)
+	while (*env)
 	{
-		tmp = env;
-		env = env->next;
+		tmp = *env;
+		*env = (*env)->next;
 		if (tmp->key)
 			free(tmp->key);
 		if (tmp->value)
@@ -1276,6 +1291,105 @@ void	free_t_cmd(t_cmd *cmd)
 		free(tmp);
 	}
 }
+
+void	free_t_cmd_nowhere(t_cmd *cmd)
+{
+	t_cmd	*tmp;
+
+	tmp = cmd;
+	// if (tmp->prev == NULL)
+	// {
+	// 	free_t_cmd(tmp);
+	// 	return ;
+	// }
+	while (tmp != NULL)
+		tmp = tmp->prev;
+	free_t_cmd(tmp);
+}/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals_handler.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:16:40 by tmillot           #+#    #+#             */
+/*   Updated: 2025/05/28 13:38:10 by tmillot          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../core/minishell.h"
+
+int	signal_handler_rl(int signum)
+{
+	if (signum == SIGINT)
+	{
+		ft_printf("^C\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		return (signum + 128);
+	}
+}
+
+int	signal_handler_exec(int signum)
+{
+	if (signum == SIGINT)
+	{
+		ft_printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		return (signum + 128);
+	}
+	else if (signum == 3)
+	{
+		ft_printf("Quit (core dumped)\n");
+		return (signum + 128);
+	}
+}
+
+int	signal_handler_here_doc(int signum)
+{
+	if (signum == SIGINT)
+	{
+		ft_printf("\n");
+		return (signum + 128);
+		rl_on_new_line();
+	}
+	if (signum == SIGQUIT)
+	{
+		write(1, "\b\b  \b\b", 6);
+		return (signum + 128);
+	}
+}
+
+int	setup_signal(int state, int status_exit)
+{
+	struct sigaction	s_action_int;
+	struct sigaction	s_action_quit;
+
+	s_action_int.sa_flags = SA_RESTART;
+	s_action_quit.sa_flags = SA_RESTART;
+	sigemptyset(&(s_action_int.sa_mask));
+	sigemptyset(&(s_action_quit.sa_mask));
+	if (state == 0)
+	{
+		s_action_int.sa_handler = signal_handler_rl;
+		s_action_quit.sa_handler = SIG_IGN;
+	}
+	else if (state == 1)
+	{
+		s_action_int.sa_handler = signal_handler_exec;
+		s_action_quit.sa_handler = signal_handler_exec;
+	}
+	else if (state == 2)
+	{
+		s_action_int.sa_handler = signal_handler_here_doc;
+		s_action_quit.sa_handler = signal_handler_here_doc;
+		s_action_int.sa_flags = 0;
+	}
+	sigaction(SIGQUIT, &s_action_quit, NULL);
+	sigaction(SIGINT, &s_action_int, NULL);
+}
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -1284,7 +1398,7 @@ void	free_t_cmd(t_cmd *cmd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 03:59:39 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/28 10:04:49 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1307,7 +1421,7 @@ static int	run_executable(t_cmd *cmd, char **envp)
 	return (CODE_FAIL);
 }
 
-int	exec_builtin(t_cmd *cmd, t_env *env)
+int	exec_builtin(t_cmd *cmd, t_env **env)
 {
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		return (ft_echo(cmd));
@@ -1316,36 +1430,47 @@ int	exec_builtin(t_cmd *cmd, t_env *env)
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		return (ft_env(env, cmd));
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return (ft_cd(&env, cmd));
+		return (ft_cd(env, cmd));
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		return (ft_export(&env, cmd));
+		return (ft_export(env, cmd));
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return (ft_unset(cmd, &env));
+		return (ft_unset(cmd, env));
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return (ft_exit(cmd, env, 0));
 	return (1);
 }
 
-int	child_process(t_env *env, t_cmd *cmd, char **envp, char *path_cmd)
+void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 {
-	struct stat	data;
+	struct stat		data;
+	int				value_exit;
 
+	setup_signal(1);
 	if (*cmd->args[0] == '.' || *cmd->args[0] == '/')
-		ft_exit_child(run_executable(cmd, envp), path_cmd, envp);
+		value_exit = run_executable(cmd, envp);
 	else if (cmd->builtin == true)
-		ft_exit_child(exec_builtin(cmd, env), path_cmd, envp);
-	else if (path_cmd == NULL)
-		ft_exit_child(127, path_cmd, envp);
-	else if (stat(path_cmd, &data) != 0)
-		return (perror("stat"), CODE_FAIL);
+		value_exit = exec_builtin(cmd, env);
+	else if (path == NULL)
+		value_exit = 127;
+	else if (stat(path, &data) != 0)
+	{
+		perror("stat");
+		value_exit = 127;
+	}
 	else if (S_ISREG(data.st_mode) == 0)
-		return (is_a_directory(cmd->args[0]), 126);
-	else if (execve(path_cmd, cmd->args, envp) == -1)
+	{
+		is_a_directory(cmd->args[0]);
+		value_exit = 126;
+	}
+	else if (execve(path, cmd->args, envp) == -1)
+	{
 		perror("execve");
-	return (ft_exit_child(CODE_FAIL, path_cmd, envp), CODE_FAIL);
+		value_exit = CODE_FAIL;
+	}
+	(free_env(env), free_t_cmd_nowhere(cmd), ft_exit_child(value_exit, path, envp));
 }
 
-int	ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd)
+int	ft_process(t_cmd *cmd, t_env **env, int *pipe_fd, int prev_fd)
 {
 	char	*path_cmd;
 	int		redir;
@@ -1359,18 +1484,18 @@ int	ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd)
 		&& *cmd->args[0] != '/' && is_built_in(*cmd->args) == FAIL)
 	{
 		path_cmd = find_cmd_path(env, cmd);
-		envp = env_tab_char(env);
+		envp = env_tab_char(env, path_cmd);
 	}
 	cmd->pid = fork();
 	if (cmd->pid == -1)
 		return (perror("fork"), CODE_FAIL);
 	if (cmd->pid != 0)
-		return (CODE_SUCCESS);
+		return (free_t_cmd_nowhere(cmd), free_tab_char(envp), free_path(path_cmd), CODE_SUCCESS);
 	redir = redirect_management(cmd, pipe_fd, prev_fd);
 	if (redir == CODE_SUCCESS && cmd->args[0])
-		ft_exit_child(child_process(env, cmd, envp, path_cmd), path_cmd, envp);
-	else
-		ft_exit_child(redir, path_cmd, envp);
+		child_process(env, cmd, envp, path_cmd);
+	(free_env(env), free_t_cmd_nowhere(cmd));
+	ft_exit_child(redir, path_cmd, envp);
 	return (CODE_SUCCESS);
 }
 /* ************************************************************************** */
@@ -1408,7 +1533,7 @@ int	is_special_built_in(char *cmd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:00:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 04:02:10 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/26 16:10:32 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1440,6 +1565,7 @@ void	free_t_redir(t_redir *list)
 		{
 			if (unlink(list->file) == -1)
 				perror("unlink error");
+			free(list->file);
 		}
 		else
 		{
@@ -1468,6 +1594,7 @@ int	wait_and_free(int status, t_cmd *cmd)
 	if (cmd != NULL)
 	{
 		last_status = wait_children(status, cmd);
+		// free_t_cmd_nowhere(cmd);
 		free_t_cmd(cmd);
 	}
 	return (last_status);
@@ -1489,7 +1616,7 @@ void	ft_exit_child(int code_status, char *path_cmd, char **envp)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:25:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/22 13:10:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:06:35 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1513,7 +1640,7 @@ static int	sep_var_name(char c)
 	return (1);
 }
 
-static char	*get_value_env(char *arg, t_env *env, int *index)
+static char	*get_value_env(char *arg, t_env **env, int *index)
 {
 	char	*value;
 	char	*name;
@@ -1522,7 +1649,7 @@ static char	*get_value_env(char *arg, t_env *env, int *index)
 
 	start = *index + 1;
 	name = NULL;
-	current = env;
+	current = *env;
 	value = ft_strdup("");
 	if (ft_isdigit(arg[start]) == 1)
 		return ((*index) += 2, value);
@@ -1542,7 +1669,7 @@ static char	*get_value_env(char *arg, t_env *env, int *index)
 	return (free(name), value);
 }
 
-void	expand_arg(char **arg, t_env *env, int last_status, int *index)
+void	expand_arg(char **arg, t_env **env, int last_status, int *index)
 {
 	char	*before_dollar;
 	char	*str_to_expand;
@@ -1570,7 +1697,7 @@ void	expand_arg(char **arg, t_env *env, int last_status, int *index)
 	free(first_join);
 }
 
-void	handling_dollars(t_cmd *cmd, t_env *env, int last_status)
+void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd		*current;
 	int			quote;
@@ -1652,7 +1779,7 @@ void	is_a_directory(char *str)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 03:55:16 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/26 12:42:37 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1711,6 +1838,7 @@ int	wait_children(int status, t_cmd *cmd)
 			last_status = 128 + WTERMSIG(cur_status);
 		current = current->next;
 	}
+	free_t_cmd_nowhere(cmd);
 	return (last_status % 255);
 }
 
@@ -1724,7 +1852,7 @@ int	is_special_build_in_parent(char **cmd)
 	return (1);
 }
 
-int	ft_exec(t_cmd *cmd, t_env *env, int last_status)
+int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 	int		pipe_fd[2];
@@ -1760,18 +1888,18 @@ int	ft_exec(t_cmd *cmd, t_env *env, int last_status)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:55:42 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/17 22:37:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/26 11:57:53 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-static char	*path_of_env(t_env *env)
+static char	*path_of_env(t_env **env)
 {
 	t_env	*current;
 	char	*path;
 
-	current = env;
+	current = *env;
 	path = NULL;
 	while (current != NULL)
 	{
@@ -1785,7 +1913,7 @@ static char	*path_of_env(t_env *env)
 	return (path);
 }
 
-char	*find_cmd_path(t_env *env, t_cmd *cmd)
+char	*find_cmd_path(t_env **env, t_cmd *cmd)
 {
 	int		i;
 	char	*path_env;
@@ -1794,7 +1922,6 @@ char	*find_cmd_path(t_env *env, t_cmd *cmd)
 	char	**possible_path;
 
 	i = -1;
-	res = NULL;
 	path_env = path_of_env(env);
 	cmd_slash = ft_strjoin("/", cmd->args[0]);
 	if (access(cmd->args[0], F_OK | X_OK) == 0)
@@ -1809,6 +1936,7 @@ char	*find_cmd_path(t_env *env, t_cmd *cmd)
 		if (access(res, F_OK | X_OK) == 0)
 			return (free(cmd_slash), free(path_env),
 				clean_split(possible_path), res);
+		free(res);
 	}
 	command_not_found(cmd->args[0]);
 	return (free(cmd_slash), free(path_env), clean_split(possible_path), NULL);
@@ -1994,7 +2122,7 @@ t_env	*cpy_env(char **env)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 10:48:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/22 16:27:14 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:08:26 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2179,6 +2307,7 @@ void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 		if (current_redir->next != NULL)
 		{
 			current_cmd->next = init_cmd();
+			current_cmd->next->prev = current_cmd;
 			current_cmd = current_cmd->next;
 		}
 		else
@@ -2416,7 +2545,7 @@ int	ft_echo(t_cmd *cmd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 15:13:10 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 12:20:25 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:23:51 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2436,10 +2565,7 @@ static void	rm_node(char *to_rm, t_env **env)
 			if (prev != NULL)
 				prev->next = current->next;
 			else
-			{
-				*env = (*env)->next;
-				printf("premier node env : %s\n", (*env)->key);
-			}
+				*env = current->next;
 			free(current->key);
 			free(current->value);
 			free(current);
@@ -2495,7 +2621,7 @@ int	ft_unset(t_cmd *cmd, t_env **env)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 20:18:37 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 03:47:58 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:19:06 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2600,7 +2726,7 @@ int	ft_export(t_env **env, t_cmd *cmd)
 				printf("declare -x %s\n", sorted->key);
 			sorted = sorted->next;
 		}
-		free_env(head_sorted);
+		free_env(&head_sorted);
 	}
 	else
 		exit_status = add_export(env, cmd);
@@ -2614,7 +2740,7 @@ int	ft_export(t_env **env, t_cmd *cmd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 03:41:18 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:17:23 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2649,7 +2775,7 @@ int	ft_check_atoll(const char *str, int *err)
 	return ((int)((res * (unsigned long long)neg) % 255));
 }
 
-void	exit_code(t_cmd *cmd, t_env *env, int exit_code, int do_exit)
+void	exit_code(t_cmd *cmd, t_env **env, int exit_code, int do_exit)
 {
 	ft_putstr_fd("exit\n", 1);
 	if (do_exit == 0)
@@ -2663,7 +2789,7 @@ void	exit_code(t_cmd *cmd, t_env *env, int exit_code, int do_exit)
 	}
 }
 
-int	ft_exit(t_cmd *cmd, t_env *env, int exit_status)
+int	ft_exit(t_cmd *cmd, t_env **env, int exit_status)
 {
 	int	err;
 	int	size;
@@ -2872,7 +2998,7 @@ int	ft_cd(t_env **env, t_cmd *cmd)
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:37:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 12:23:30 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:07:45 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -2885,11 +3011,11 @@ static void	error_env(char *args)
 	ft_putstr_fd("\': No such file or directory\n", 2);
 }
 
-int	ft_env(t_env *env, t_cmd *cmd)
+int	ft_env(t_env **env, t_cmd *cmd)
 {
 	t_env	*current;
 
-	current = env;
+	current = *env;
 	if (count_tab_char(cmd->args) > 1)
 		return (error_env(cmd->args[1]), 127);
 	while (current)
@@ -5196,7 +5322,7 @@ char	*process_buffer(char *buffer, char *str);
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/23 12:06:54 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/28 10:04:00 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -5212,6 +5338,7 @@ char	*process_buffer(char *buffer, char *str);
 # include "../includes/get_next_line/get_next_line.h"
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <signal.h>
 
 # define LL_MAX			9223372036854775807ULL
 # define ERR_NUM_EXIT	"minishell: exit: numeric argument required\n"
@@ -5256,6 +5383,7 @@ typedef struct s_cmd
 	t_redir					*outfile;
 	pid_t					pid;
 	bool					builtin;
+	struct s_cmd			*prev;
 	struct s_cmd			*next;
 }							t_cmd;
 
@@ -5270,9 +5398,8 @@ typedef struct s_env
 
 typedef struct s_shell
 {
-	t_env					**env;
-	t_cmd					**cmd;
-	int						exit_status;
+	t_env					*env;
+	t_cmd					*cmd;
 }							t_shell;
 
 typedef struct t_parse_space
@@ -5353,7 +5480,7 @@ void						parse_redir_output(t_parse *cmd, char *line);
 void						parse_redir_append(t_parse *cmd, char *line);
 void						parse_redir_heredoc(t_parse *cmd, char *line);
 void						parse_redir(t_parse_redir *redir, char **pipe);
-int							parse_v2(char *line, t_env *env, int last_status);
+int							parse_v2(char *line, t_env **env, int last_status);
 
 /* quotes */
 char						*skip_quotes(char *line, char quote);
@@ -5387,10 +5514,10 @@ char	*get_here_doc(char *str);
 int							ft_pwd(void);
 int							ft_echo(t_cmd *cmd);
 int							ft_cd(t_env **env, t_cmd *cmd);
-int							ft_env(t_env *env, t_cmd *cmd);
+int							ft_env(t_env **env, t_cmd *cmd);
 int							ft_unset(t_cmd *cmd, t_env **env);
 int							ft_export(t_env **env, t_cmd *cmd);
-int							ft_exit(t_cmd *cmd, t_env *env, int exit_status);
+int							ft_exit(t_cmd *cmd, t_env **env, int exit_status);
 
 /* utils built-in */
 t_env 						*copy_export(t_env *env);
@@ -5406,9 +5533,9 @@ char						*get_after_egal(char *str);
 int	    					count_tab_char(char **tab);
 
 /* Handle expand var and trim quotes */
-void    					expand_and_trim_cmd(t_cmd *cmd, t_env *env, int last_status);
-void						handling_dollars(t_cmd *cmd, t_env *env, int last_status);
-void						expand_arg(char **arg, t_env *env, int last_status, int *index);
+void    					expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status);
+void						handling_dollars(t_cmd *cmd, t_env **env, int last_status);
+void						expand_arg(char **arg, t_env **env, int last_status, int *index);
 int							check_expand_quote(int *quote, char c);
 void    					trim_quotes(t_cmd *cmd);
 void    					find_and_trim_quote(char **arg);
@@ -5422,19 +5549,19 @@ void						permission_denied(char *file);
 void						no_such_file_or_directory(char *cmd);
 
 /* executing */
-int							ft_exec(t_cmd *cmd, t_env *env, int exit_code);
+int							ft_exec(t_cmd *cmd, t_env **env, int exit_code);
 int							is_special_built_in(char *cmd);
-int							exec_builtin(t_cmd *cmd, t_env *env);
+int							exec_builtin(t_cmd *cmd, t_env **env);
 
 /* build env for execution */
-char						**env_tab_char(t_env *env);
+char						**env_tab_char(t_env **env, char *path_cmd);
 
 /* process */
-int							ft_process(t_cmd *cmd, t_env *env, int *pipe_fd, int prev_fd);
+int							ft_process(t_cmd *cmd, t_env **env, int *pipe_fd, int prev_fd);
 void						ft_exit_child(int code_status, char *path_cmd, char **envp);
 
 /* find command */
-char						*find_cmd_path(t_env *env, t_cmd *cmd);
+char						*find_cmd_path(t_env **env, t_cmd *cmd);
 
 /* management of redirection for infile or outfile */
 int							last_outfile(t_cmd *cmd);
@@ -5448,7 +5575,9 @@ void						free_t_redir(t_redir *list);
 int							wait_and_free(int status, t_cmd *cmd);
 void						free_path(char *path_cmd);
 int							wait_children(int status, t_cmd *cmd);
-void						free_env(t_env *env);
+void						free_env(t_env **env);
+void						free_t_cmd_nowhere(t_cmd *cmd);
+void	setup_signal(int sig);
 
 #endif/* ************************************************************************** */
 /*                                                                            */
@@ -5458,7 +5587,7 @@ void						free_env(t_env *env);
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:33 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/17 20:34:14 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/28 10:04:33 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -5480,9 +5609,11 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	while (1)
 	{
+		setup_signal(0);
 		line = readline("Minishell:~$ ");
+		if (line == NULL)
 		add_history(line);
-		last_status = parse_v2(line, env, last_status);
+		last_status = parse_v2(line, &env, last_status);
 		free(line);
 	}
 	(void)env;

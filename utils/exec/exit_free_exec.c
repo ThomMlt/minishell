@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:00:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 04:02:10 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/29 10:44:59 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	free_t_redir(t_redir *list)
 		{
 			if (unlink(list->file) == -1)
 				perror("unlink error");
+			free(list->file);
 		}
 		else
 		{

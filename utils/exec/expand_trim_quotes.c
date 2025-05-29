@@ -6,13 +6,13 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:15:48 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/12 14:07:03 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/29 10:27:35 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-void	expand_and_trim_redir(t_redir *redirection, t_env *env, int last_status)
+void	expand_trim_redir(t_redir *redirection, t_env **env, int last_status)
 {
 	t_redir		*current;
 	int			quote;
@@ -35,7 +35,7 @@ void	expand_and_trim_redir(t_redir *redirection, t_env *env, int last_status)
 	}
 }
 
-void	expand_and_trim_cmd(t_cmd *cmd, t_env *env, int last_status)
+void	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 
@@ -45,9 +45,9 @@ void	expand_and_trim_cmd(t_cmd *cmd, t_env *env, int last_status)
 	while (current != NULL)
 	{
 		if (current->infile != NULL)
-			expand_and_trim_redir(current->infile, env, last_status);
+			expand_trim_redir(current->infile, env, last_status);
 		if (current->outfile != NULL)
-			expand_and_trim_redir(current->outfile, env, last_status);
+			expand_trim_redir(current->outfile, env, last_status);
 		current = current->next;
 	}
 }

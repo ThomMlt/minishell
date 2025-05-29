@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 17:55:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/23 13:07:19 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/27 11:47:57 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ t_parse_redir	*init_redir(void)
 	return (redir);
 }
 
-int	parse_v2(char *line, t_env *env, int last_status)
+int	parse_v2(char *line, t_env **env, int last_status)
 {
 	int				i;
 	char			**pipe;
@@ -83,7 +83,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 	t_cmd			*cmd;
 
 	i = 0;
-	if (line[0] == '\0')
+	if (line[0] == '\0' || line == NULL)
 		return (last_status);
 	while (line[i] != '\0')
 	{
@@ -106,6 +106,7 @@ int	parse_v2(char *line, t_env *env, int last_status)
 	clean_pipe(pipe);
 	clean_redir(redir);
 	// print_cmd_debug(cmd);
+	cmd = cmd;
 	last_status = ft_exec(cmd, env, last_status);
 	return (last_status);
 }

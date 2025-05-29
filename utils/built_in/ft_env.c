@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 14:37:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 12:23:30 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:07:45 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ static void	error_env(char *args)
 	ft_putstr_fd("\': No such file or directory\n", 2);
 }
 
-int	ft_env(t_env *env, t_cmd *cmd)
+int	ft_env(t_env **env, t_cmd *cmd)
 {
 	t_env	*current;
 
-	current = env;
+	current = *env;
 	if (count_tab_char(cmd->args) > 1)
 		return (error_env(cmd->args[1]), 127);
 	while (current)

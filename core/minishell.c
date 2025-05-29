@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:33 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/23 13:13:08 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/28 15:13:25 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,15 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	while (1)
 	{
+		setup_signal(1);
 		line = readline("Minishell:~$ ");
+		if (g_signal == true)
+		{
+			last_status = 130;
+			g_signal = false;
+		}
 		add_history(line);
-		last_status = parse_v2(line, env, last_status);
+		last_status = parse_v2(line, &env, last_status);
 		free(line);
 	}
 	(void)env;

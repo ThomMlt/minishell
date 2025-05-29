@@ -6,18 +6,18 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:55:42 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/17 22:37:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/26 11:57:53 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-static char	*path_of_env(t_env *env)
+static char	*path_of_env(t_env **env)
 {
 	t_env	*current;
 	char	*path;
 
-	current = env;
+	current = *env;
 	path = NULL;
 	while (current != NULL)
 	{
@@ -31,7 +31,7 @@ static char	*path_of_env(t_env *env)
 	return (path);
 }
 
-char	*find_cmd_path(t_env *env, t_cmd *cmd)
+char	*find_cmd_path(t_env **env, t_cmd *cmd)
 {
 	int		i;
 	char	*path_env;
@@ -40,7 +40,6 @@ char	*find_cmd_path(t_env *env, t_cmd *cmd)
 	char	**possible_path;
 
 	i = -1;
-	res = NULL;
 	path_env = path_of_env(env);
 	cmd_slash = ft_strjoin("/", cmd->args[0]);
 	if (access(cmd->args[0], F_OK | X_OK) == 0)
@@ -55,6 +54,7 @@ char	*find_cmd_path(t_env *env, t_cmd *cmd)
 		if (access(res, F_OK | X_OK) == 0)
 			return (free(cmd_slash), free(path_env),
 				clean_split(possible_path), res);
+		free(res);
 	}
 	command_not_found(cmd->args[0]);
 	return (free(cmd_slash), free(path_env), clean_split(possible_path), NULL);

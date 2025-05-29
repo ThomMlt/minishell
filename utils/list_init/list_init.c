@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 06:57:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/18 06:57:54 by lidbaha          ###   ########.fr       */
+/*   Updated: 2025/05/23 18:08:20 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ t_cmd	*init_cmd(void)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->next = NULL;
+	cmd->infile = NULL;
+	cmd->outfile = NULL;
+	cmd->prev = NULL;
 
 	return (cmd);
 }

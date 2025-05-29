@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:25:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/22 13:10:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:06:35 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	sep_var_name(char c)
 	return (1);
 }
 
-static char	*get_value_env(char *arg, t_env *env, int *index)
+static char	*get_value_env(char *arg, t_env **env, int *index)
 {
 	char	*value;
 	char	*name;
@@ -39,7 +39,7 @@ static char	*get_value_env(char *arg, t_env *env, int *index)
 
 	start = *index + 1;
 	name = NULL;
-	current = env;
+	current = *env;
 	value = ft_strdup("");
 	if (ft_isdigit(arg[start]) == 1)
 		return ((*index) += 2, value);
@@ -59,7 +59,7 @@ static char	*get_value_env(char *arg, t_env *env, int *index)
 	return (free(name), value);
 }
 
-void	expand_arg(char **arg, t_env *env, int last_status, int *index)
+void	expand_arg(char **arg, t_env **env, int last_status, int *index)
 {
 	char	*before_dollar;
 	char	*str_to_expand;
@@ -87,7 +87,7 @@ void	expand_arg(char **arg, t_env *env, int last_status, int *index)
 	free(first_join);
 }
 
-void	handling_dollars(t_cmd *cmd, t_env *env, int last_status)
+void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd		*current;
 	int			quote;

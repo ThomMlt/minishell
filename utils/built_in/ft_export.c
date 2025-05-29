@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 20:18:37 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 03:47:58 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/05/23 15:19:06 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int	ft_export(t_env **env, t_cmd *cmd)
 				printf("declare -x %s\n", sorted->key);
 			sorted = sorted->next;
 		}
-		free_env(head_sorted);
+		free_env(&head_sorted);
 	}
 	else
 		exit_status = add_export(env, cmd);
