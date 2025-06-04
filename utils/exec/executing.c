@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/29 12:05:54 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 11:19:15 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 int	is_built_in(char *str)
 {
-	if (ft_strcmp(str, "echo") == 0)
+	if (str == NULL)
+		return (FAIL);
+	else if (ft_strcmp(str, "echo") == 0)
 		return (SUCCESS);
 	else if (ft_strcmp(str, "cd") == 0)
 		return (SUCCESS);
@@ -65,7 +67,7 @@ int	wait_children(int status, t_cmd *cmd)
 			last_status = 128 + WTERMSIG(cur_status);
 		current = current->next;
 	}
-	free_t_cmd_nowhere(cmd);
+	free_t_cmd(cmd);
 	return (last_status % 255);
 }
 
@@ -90,7 +92,7 @@ int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 	prev_fd = STDIN_FILENO;
 	current = cmd;
 	if (current->next == NULL && is_special_build_in_parent(current->args) == 0)
-		return (exec_builtin(current, env));
+		return (exec_builtin(current, env), free_t_cmd(current), 0);
 	while (current != NULL)
 	{
 		if (pipe(pipe_fd) == -1)

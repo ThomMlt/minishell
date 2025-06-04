@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 04:01:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/29 10:43:36 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 09:35:20 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,15 @@ void	free_t_cmd_nowhere(t_cmd *cmd)
 	t_cmd	*tmp;
 
 	tmp = cmd;
-	while (tmp != NULL)
+	while (tmp->prev != NULL)
 		tmp = tmp->prev;
 	free_t_cmd(tmp);
 }
 
 void	safe_free_exec(t_cmd *cmd, char **envp, char *path)
 {
-	free_t_cmd_nowhere(cmd);
+	(void)cmd;
+	// free_t_cmd_nowhere(cmd);
 	free_tab_char(envp);
 	free_path(path);
 }

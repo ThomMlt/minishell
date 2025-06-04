@@ -12,13 +12,6 @@
 
 #include "../../core/minishell.h"
 
-void	free_tab(char **tab, int y)
-{
-	while (y >= 0)
-		free(tab[y--]);
-	free(tab);
-}
-
 void	clean_split(char **split)
 {
 	int	i;
@@ -34,46 +27,43 @@ void	clean_split(char **split)
 	free(split);
 }
 
-void	clean_quotes(t_quotes *quotes)
+void	clean_t_redir(t_redir *redir)
 {
-	while (quotes->next != NULL)
+	t_redir		*temp;
+
+	temp = redir;
+	while (temp != NULL)
 	{
-		free(quotes->line);
-		quotes = quotes->next;
+		free(temp->file);
+		if (temp->next != NULL)
+		{
+			redir = temp->next;
+			free(temp);
+			temp = redir;
+		}
+		else
+		{
+			free(temp);
+			break ;
+		}
 	}
-	free(quotes);
 }
 
-void	clean_cmd(t_parse *cmd)
+void	clean_t_cmd(t_cmd *cmd)
 {
-	clean_split(cmd->space->line);
-	clean_split(cmd->pipe->line);
-	clean_split(cmd->redir_input->line);
-	clean_split(cmd->redir_output->line);
-	clean_split(cmd->redir_append->line);
-	clean_split(cmd->redir_heredoc->line);
-	if (cmd->line)
-		free(cmd->line);
-	if (cmd->space)
-		free(cmd->space);
-	if (cmd->pipe)
-		free(cmd->pipe);
-	if (cmd->redir_input)
-		free(cmd->redir_input);
-	if (cmd->redir_output)
-		free(cmd->redir_output);
-	if (cmd->redir_append)
-		free(cmd->redir_append);
-	if (cmd->redir_heredoc)
-		free(cmd->redir_heredoc);
-	free(cmd);
-}
+	t_cmd	*tmp;
 
-void	clean_env(void)
-{
-	clear_history();
-	rl_clear_signals();
-	rl_cleanup_after_signal();
+	while (cmd != NULL)
+	{
+		tmp = cmd->next;
+		clean_split(cmd->args);
+		if (cmd->infile != NULL)
+			clean_t_redir(cmd->infile);
+		if (cmd->outfile != NULL)
+			clean_t_redir(cmd->outfile);
+		free(cmd);
+		cmd = tmp;
+	}
 }
 
 void	clean_pipe(char **pipe)

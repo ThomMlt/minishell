@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:25:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 15:06:35 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 10:01:31 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	expand_arg(char **arg, t_env **env, int last_status, int *index)
 	char	*first_join;
 
 	before_dollar = NULL;
-	str_to_expand = ft_strdup("");
+	str_to_expand = NULL;
 	end_str = NULL;
 	before_dollar = ft_substr((*arg), 0, *index);
 	if ((*arg)[*index + 1] == '?')

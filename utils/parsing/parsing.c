@@ -1,75 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
+/*   parsing_v2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lidbaha <lidbaha@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 10:10:52 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/03/25 16:12:22 by lidbaha          ###   ########.fr       */
+/*   Created: 2025/04/12 17:55:23 by lidbaha           #+#    #+#             */
+/*   Updated: 2025/05/27 11:47:57 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-void	parse_space(t_parse *cmd, char *line)
+char	*skip_quotes(char *line, char quote)
 {
-	char			**tmp;
-	t_parse_space	*space;
-
-	space = malloc(sizeof(t_parse_space));
-	tmp = ft_split(line, ' ');
-	space->line = ft_strdup_split(tmp);
-	cmd->space = space;
-	clean_split(tmp);
+	line++;
+	while (*line != quote)
+		line++;
+	line++;
+	return (line);
 }
 
-void	check_line(t_parse *cmd)
+void	parse(char *line, t_cmd *cmd)
 {
-	if (cmd->space->line[0] == NULL)
-		return ;
-	if (ft_strcmp(cmd->space->line[0], "exit") == 0
-		&& cmd->space->line[1] == NULL)
-	{
-		clean_cmd(cmd);
-		clean_env();
-		exit(0);
-	}
-}
+	char			**pipe;
+	t_parse_redir	*redir;
 
-t_quotes	*init_quotes(void)
-{
-	t_quotes	*tmp;
-
-	tmp = malloc(sizeof(t_quotes));
-	tmp->line = NULL;
-	tmp->index = 0;
-	tmp->next = NULL;
-	return (tmp);
-}
-
-void	parse(char *line)
-{
-	t_parse			*cmd;
-	t_quotes		*quotes;
-
-	if (line[0] != '\0')
-	{
-		cmd = malloc(sizeof(t_parse));
-		quotes = init_quotes();
-		cmd->line = ft_strdup(line);
-		line = remove_quotes(line, quotes);
-		parse_space(cmd, line);
-		parse_pipe(cmd, line);
-		parse_redir_input(cmd, line);
-		parse_redir_output(cmd, line);
-		parse_redir_append(cmd, line);
-		parse_redir_heredoc(cmd, line);
-		//replace_quotes(cmd, quotes);
-		check_line(cmd);
-		clean_quotes(quotes);
-		clean_cmd(cmd);
-	}
-	else
-		free(line);
+	if (line == NULL)
+		return ; // do nothing if line is NULL
+	if (line[0] == '\0')
+		return ; // do nothing if line is empty
+	if (check_if_valid_pipe(line, '|') == 1)
+		return ; // return pipe error
+	if (check_if_valid_redir(line) == 1)
+		return ; // return redirection error
+	if (check_quotes(line) == -1)
+		return ; // return quote error
+	pipe = ft_divide_char(line, '|');
+	redir = init_redir();
+	parse_redir(redir, pipe);
+	fill_t_cmd(redir, cmd);
+	clean_pipe(pipe);
+	clean_redir(redir);
 }

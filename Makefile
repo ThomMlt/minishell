@@ -13,7 +13,6 @@
 NAME = minishell
 
 SOURCES = core/minishell.c \
-		  utils/toto_t_fill.c \
 		  utils/env/cpy_env.c \
 		  utils/cleaning/clean.c \
 		  utils/built_in/ft_cd.c \
@@ -29,14 +28,16 @@ SOURCES = core/minishell.c \
 		  utils/parsing/here_doc.c \
 		  utils/parsing/fill_cmd.c \
 		  utils/built_in/ft_unset.c \
+		  utils/checking/checking.c \
           utils/exec/find_command.c \
+		  utils/parsing/fill_cmd_2.c \
 		  utils/built_in/ft_export.c \
-		  utils/parsing/parsing_v2.c \
-		  utils/parsing/parse_type.c \
+		  utils/list_init/list_init.c \
 		  utils/exec/exit_free_exec.c \
 		  utils/parsing/parse_redir.c \
 		  utils/exec/handle_env_exec.c \
 		  utils/exec/signals_handler.c \
+		  utils/parsing/parse_redir_2.c \
 		  utils/exec/handling_dollars.c \
 		  utils/exec/open_redirection.c \
 		  utils/split/ft_strdup_split.c \
@@ -45,12 +46,9 @@ SOURCES = core/minishell.c \
 		  utils/exec/expand_trim_quotes.c \
 		  utils/built_in/utils_built_in.c \
 		  utils/exec/redirect_management.c \
-		  utils/parsing/ft_strcmp_minishell.c \
-		  utils/parsing/quotes/remove_quotes.c \
+		  utils/strcmp/ft_strcmp_minishell.c \
 		  utils/parsing/divide/ft_divide_str.c \
 		  utils/parsing/divide/ft_divide_char.c \
-		  utils/parsing/quotes/replace_quotes.c \
-		  utils/split/ft_minishell_split_char.c \
 
 CC = cc
 

@@ -67,22 +67,20 @@ void	divide(char *line, char **result, char sep)
 	int	start;
 	int	index;
 
-	i = 0;
+	i = -1;
 	start = 0;
 	index = 0;
-	while (line[i] != '\0')
+	while (line[++i] != '\0')
 	{
 		if (line[i] == '\"' || line[i] == '\'')
 			i = check_quote_closed(line, i + 1, line[i]) + 1;
 		if (line[i] == sep && line[i + 1] != sep && line[i - 1] != sep)
-
 		{
 			result[index] = add_chunk(line, start, i - 1);
 			result[index + 1] = add_sep(sep);
 			start = i + 1;
 			index += 2;
 		}
-		i++;
 	}
 	if (start < i)
 	{

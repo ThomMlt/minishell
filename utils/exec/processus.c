@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/29 10:44:35 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/03 17:30:06 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 	struct stat		data;
 	int				value_exit;
 
+	value_exit = 0;
 	setup_signal(0);
 	if (*cmd->args[0] == '.' || *cmd->args[0] == '/')
 		value_exit = run_executable(cmd, envp);

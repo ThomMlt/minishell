@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/29 10:59:04 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 13:34:44 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,38 +35,32 @@ int	if_limiter(char *line, char *limiter)
 	return (1);
 }
 
-void	setup_signal_false(void)
-{
-	if (g_signal == true)
-		g_signal = false;
-}
-
 int	fill_here_doc_file(int fd, char *delimitor)
 {
-    char *line;
-    
-    setup_signal_heredoc();
-    while (1)
-    {
-        write(1, "> ", 2); 
-        line = get_next_line(0);
-        if (g_signal == true)
-			return (setup_signal_false(), free_path(line), 0);
-        if (line == NULL)
-        {
-            ft_printf("bash: warning: here-document delimited"
-                     " by end-of-file (wanted `%s')\n", delimitor);
-            break ;
-        }
-        if (if_limiter(line, delimitor) == 0)
-        {
-            free(line);
-            break ;
-        }
-        ft_putstr_fd(line, fd);
-        free(line);
-    }
-    setup_signal_false();
+	char	*line;
+
+	setup_signal_heredoc();
+	while (1)
+	{
+		write(1, "> ", 2);
+		line = get_next_line(0);
+		if (g_signal == true)
+			return (free_path(line), 0);
+		if (line == NULL)
+		{
+			ft_printf("bash: warning: here-document delimited"
+				" by end-of-file (wanted `%s')\n", delimitor);
+			break ;
+		}
+		if (if_limiter(line, delimitor) == 0)
+		{
+			free(line);
+			break ;
+		}
+		ft_putstr_fd(line, fd);
+		free(line);
+	}
+	// setup_signal_false();
 	return (1);
 }
 

@@ -19,12 +19,13 @@ t_cmd	*init_cmd(void)
 	cmd = malloc(sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
+	cmd->outfile = NULL;
+	cmd->infile = NULL;
 	cmd->args = NULL;
 	cmd->next = NULL;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
 	cmd->prev = NULL;
-
 	return (cmd);
 }
 

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 18:44:45 by tmillot           #+#    #+#             */
-/*   Updated: 2025/03/31 18:22:01 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 11:42:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*get_after_egal(char *str)
 	egal = ft_strchr(str, '=');
 	if (egal == NULL)
 		return (NULL);
-	if (*(egal + 1) == '\0')
+	else if (*(egal + 1) == '\0')
 		return (ft_strdup(""));
 	res = ft_strdup(egal + 1);
 	return (res);

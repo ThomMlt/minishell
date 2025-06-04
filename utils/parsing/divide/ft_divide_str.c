@@ -41,7 +41,8 @@ int	divide_size_str(char *line, char *sep)
 	{
 		if (line[i] == '\"' || line[i] == '\'')
 			i = check_quote_closed(line, i + 1, line[i]) + 1;
-		else if (is_separator_at(line, sep, i) && !is_separator_at(line, sep, i + sep_len))
+		else if (is_separator_at(line, sep, i)
+			&& !is_separator_at(line, sep, i + sep_len))
 		{
 			result++;
 			i += sep_len - 1;
@@ -96,23 +97,22 @@ void	divide_str(char *line, char **result, char *sep)
 	int	i;
 	int	start;
 	int	index;
-	int	sep_len;
 
 	i = 0;
 	start = 0;
 	index = 0;
-	sep_len = ft_strlen(sep);
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\"' || line[i] == '\'')
 			i = check_quote_closed(line, i + 1, line[i]) + 1;
-		else if (is_separator_at(line, sep, i) && !is_separator_at(line, sep, i + sep_len))
+		else if (is_separator_at(line, sep, i)
+			&& !is_separator_at(line, sep, i + ft_strlen(sep)))
 		{
 			result[index] = add_chunk_str(line, start, i - 1);
 			result[index + 1] = add_sep_str(sep);
-			start = i + sep_len;
+			start = i + ft_strlen(sep);
 			index += 2;
-			i += sep_len - 1;
+			i += ft_strlen(sep) - 1;
 		}
 		else
 			i++;

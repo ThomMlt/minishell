@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 15:17:23 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 11:14:17 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,11 @@ int	ft_check_atoll(const char *str, int *err)
 
 void	exit_code(t_cmd *cmd, t_env **env, int exit_code, int do_exit)
 {
-	ft_putstr_fd("exit\n", 1);
 	if (do_exit == 0)
 	{
 		if (cmd != NULL)
 		{
-			free_t_cmd(cmd);
+			free_t_cmd_nowhere(cmd);
 			free_env(env);
 		}
 		exit(exit_code);
@@ -63,7 +62,7 @@ int	ft_exit(t_cmd *cmd, t_env **env, int exit_status)
 	size = count_tab_char(cmd->args);
 	err = 0;
 	ft_putstr_fd("exit\n", 1);
-	if (size > 2)
+	if (size >= 2)
 	{
 		exit_status = ft_check_atoll(cmd->args[1], &err);
 		if (err == -1)

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 18:56:32 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/03 13:58:36 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 11:51:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,15 @@ static void	update_pwd(t_env **env, char *oldpwd)
 	while (current != NULL)
 	{
 		if (ft_strcmp(current->key, "PWD") == 0)
+		{
+			free(current->value);
 			current->value = ft_strdup(newpwd);
+		}
 		if (ft_strcmp(current->key, "OLDPWD") == 0)
+		{
+			free(current->value);
 			current->value = ft_strdup(oldpwd);
+		}
 		current = current->next;
 	}
 }
@@ -38,7 +44,7 @@ static char	*find_home(t_env **env)
 	find = NULL;
 	while (current)
 	{
-		if (ft_strcmp(current->key, "HOME"))
+		if (ft_strncmp(current->key, "HOME", 4) == 0)
 		{
 			find = ft_strdup(current->value);
 			return (find);

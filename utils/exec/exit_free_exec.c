@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:00:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/29 10:44:59 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 09:36:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ void	free_tab_char(char **tab)
 		return ;
 	while (tab[i] != NULL)
 	{
-		if (tab[i])
-			free(tab[i]);
+		free(tab[i]);
 		i++;
 	}
 	free(tab);
@@ -67,7 +66,7 @@ int	wait_and_free(int status, t_cmd *cmd)
 	if (cmd != NULL)
 	{
 		last_status = wait_children(status, cmd);
-		free_t_cmd(cmd);
+		// free_t_cmd(cmd);
 	}
 	return (last_status);
 }
