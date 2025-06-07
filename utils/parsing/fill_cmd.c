@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 10:48:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/18 11:17:04 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/05 17:08:25 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,55 @@ void	add_split(t_cmd *current_cmd, char **split)
 	clean_split(new);
 }
 
-void	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
+int	is_only_spaces(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (1);
+	while (str[i])
+	{
+		if (str[i] != ' ' && str[i] != '\t')
+			return (0);
+		i++;
+	}
+	return (1); // La chaîne ne contient que des espaces/tabs ou est vide
+}
+
+void	remove_space(t_cmd *current_cmd)
+{
+	char	**new;
+	int		size;
+	int		i;
+
+	i = 0;
+	size = 0;
+	while (current_cmd->args[i] != NULL)
+	{
+		if (current_cmd->args[i][0] != ' ' && !is_only_spaces(current_cmd->args[i]))
+			size++;
+		i++;
+	}
+	new = malloc(sizeof(char *) * (size + 1));
+	i = 0;
+	size = 0;
+	while (current_cmd->args[i] != NULL)
+	{
+		if (current_cmd->args[i][0] != ' ' && !is_only_spaces(current_cmd->args[i]))
+		{
+			new[size] = ft_strdup(current_cmd->args[i]);
+			size++;
+		}
+		i++;
+	}
+	new[size] = NULL;
+	clean_split(current_cmd->args);
+	current_cmd->args = ft_strdup_split(new);
+	clean_split(new);
+}
+
+int	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
 {
 	int	i;
 
@@ -63,19 +111,22 @@ void	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
 	{
 		if (get_type(current_redir->line[i]) != WORD)
 		{
-			add_redir(current_cmd, current_redir->line[i + 1],
-				get_type(current_redir->line[i]));
+			if (add_redir(current_cmd, current_redir->line[i + 1],
+					get_type(current_redir->line[i])) == 1)
+				return (1);
 			i += 2;
 		}
 		else
 		{
-			current_cmd->args = ft_split(current_redir->line[i], ' ');
+ 			current_cmd->args = ft_divide_char(current_redir->line[i], ' ');
+			remove_space(current_cmd);
 			i++;
 		}
 	}
+	return (0);
 }
 
-void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
+int	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 {
 	t_parse_redir	*current_redir;
 	t_cmd			*current_cmd;
@@ -84,15 +135,23 @@ void	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 	current_cmd = cmd;
 	while (current_redir != NULL)
 	{
-		fill_line(current_redir, current_cmd);
-		if (current_redir->next != NULL)
+		if (current_redir->line[0][0] != '|')
 		{
-			current_cmd->next = init_cmd();
-			current_cmd->next->prev = current_cmd;
-			current_cmd = current_cmd->next;
+			if (fill_line(current_redir, current_cmd) == 1)
+				return (1);
+			if (current_redir->next != NULL)
+			{
+				current_cmd->next = init_cmd();
+				current_cmd->next->prev = current_cmd;
+				current_cmd = current_cmd->next;
+			}
+			else
+				current_cmd->next = NULL;
+			current_redir = current_redir->next;
 		}
 		else
-			current_cmd->next = NULL;
-		current_redir = current_redir->next;
+			if (current_redir->next != NULL)
+				current_redir = current_redir->next;
 	}
+	return (0);
 }

@@ -85,7 +85,8 @@ int	check_quotes(char *line)
 			else
 				return (-1);
 		}
-		i++;
+		if (line[i] != '\0')
+			i++;
 	}
 	return (0);
 }

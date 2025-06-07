@@ -48,7 +48,7 @@
 2. Parsing des commandes 
     1. Tokeniser la ligne de commande reçue (le type de tokens : mots, opérateurs et guillemets, gérer également les variables d’environnement si $) :
         1. exemple : `echo "Hello world" | grep Hello > output.txt` 
-            1. → echo : commande, “Hello World” argument, “|” pipe, “>” redirection, “output.txt : fichier”
+            1. → echo: commande, “Hello World” argument, “|” pipe, “>” redirection, “output.txt: fichier”
     2. gérer les guillemets simples (’)
     3. les doubles (”)
     4. Gérer $? pour le statut de sortie
@@ -113,14 +113,14 @@ typedef struct s_redir
 typedef struct s_cmd
 {
      char					      **args; // contient la commande et ses arguments entre les pipes
-	    t_redir					   *infile; // representa les redirection d'entree (< file_name ou << OEF)
+	    t_redir					   *infile; // représente les redirection d'entre (< file_name ou << OEF)
 	    t_redir					   *outfile; // redirection de sortie ( > file, >> file)
 	    bool					      builtin; 
 	    struct s_cmd			*next;
 }							t_cmd;
 
-pourquoi faire des redirections d'entree ou de sorties en liste chaines : 
- - une commande peut avoir une ou plusieurs redirection ou aucune
+Pourquoi faire des redirections d'entre ou de sorties en liste chaines : 
+ - une commande peut avoir une ou plusieurs redirections ou aucune
      - entree simple: cat < file1 > file2 le node cmd a un node pour infile avec file1 et un node avec outfile avec file2
      - entree plus complexe : cat < file1 < file2 le node cmd avec la commande cat : infile va avoir deux nodes
      - sortie meme principe 

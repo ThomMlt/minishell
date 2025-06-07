@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:25:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/04 10:01:31 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/07 17:14:08 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	expand_arg(char **arg, t_env **env, int last_status, int *index)
 	first_join = ft_strjoin(before_dollar, str_to_expand);
 	free((*arg));
 	(*arg) = ft_strjoin(first_join, end_str);
+	*index = ft_strlen(str_to_expand) + *index - 1;
 	free(before_dollar);
 	free(str_to_expand);
 	free(end_str);
@@ -105,9 +106,10 @@ void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
 			while (current->args[i][j] != '\0')
 			{
 				check_expand_quote(&quote, current->args[i][j]);
-				if (current->args[i][j] == '$' && quote != S_QUOTE)
+				if (current->args[i][j] == '$' && quote != S_QUOTE) // && (current->args[i][j + 1] != '\0' || current->args[i + 1] != NULL)
 					expand_arg(&current->args[i], env, last_status, &j);
-				j++;
+				else
+					j++;
 			}
 			i++;
 		}

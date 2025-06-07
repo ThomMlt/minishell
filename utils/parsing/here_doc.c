@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/04 13:34:44 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/04 15:34:48 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	made_new_file(int *fd, char **name)
 {
-	static int	nb_file = 0;
+	static int	nb_file = 1;
 	char		*str;
 	char		*number_file;
 
@@ -42,7 +42,7 @@ int	fill_here_doc_file(int fd, char *delimitor)
 	setup_signal_heredoc();
 	while (1)
 	{
-		write(1, "> ", 2);
+		write(1, "heredoc> ", 9);
 		line = get_next_line(0);
 		if (g_signal == true)
 			return (free_path(line), 0);
@@ -60,7 +60,6 @@ int	fill_here_doc_file(int fd, char *delimitor)
 		ft_putstr_fd(line, fd);
 		free(line);
 	}
-	// setup_signal_false();
 	return (1);
 }
 

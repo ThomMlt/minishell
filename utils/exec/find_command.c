@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:55:42 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/26 11:57:53 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/06 16:49:41 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ char	*find_cmd_path(t_env **env, t_cmd *cmd)
 	cmd_slash = ft_strjoin("/", cmd->args[0]);
 	if (access(cmd->args[0], F_OK | X_OK) == 0)
 		return (free(path_env), free(cmd_slash), ft_strdup(cmd->args[0]));
-	if (path_env == NULL)
+	if (path_env == NULL || cmd->args[0][0] == '\0')
 		return (free(path_env), free(cmd_slash),
 			command_not_found(cmd->args[0]), NULL);
 	possible_path = ft_split(path_env, ':');

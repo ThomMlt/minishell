@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 20:18:37 by thomas            #+#    #+#             */
-/*   Updated: 2025/05/23 15:19:06 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/06 17:54:39 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ static void	add_var_to_env(char *key, char *value, t_env **env)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
+			if (current->value != NULL)
+				free(current->value);
 			current->value = ft_strdup(value);
 			return ;
 		}

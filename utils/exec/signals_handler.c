@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 13:16:40 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/29 10:30:12 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/06 12:21:37 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ volatile bool	g_signal = false;
 
 void	signal_handler(int signum)
 {
-	printf("\n");
+	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -30,6 +30,17 @@ void	signal_handler_here_doc(int signum)
 	{
 		g_signal = true;
 		write(1, "\n", 1);
+	}
+}
+
+void	signal_handler_exec(int signum)
+{
+	if (signum == SIGINT)
+	{
+		ft_printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		g_signal = true;
 	}
 }
 
@@ -57,11 +68,16 @@ void	setup_signal(int sig)
 	sa_sigquit.sa_flags = SA_RESTART;
 	sigemptyset(&sa_sigint.sa_mask);
 	sigemptyset(&sa_sigquit.sa_mask);
-	sa_sigint.sa_handler = &signal_handler;
-	if (sig == 1)
+	if (sig == 0)
+	{
+		sa_sigint.sa_handler = signal_handler;
 		sa_sigquit.sa_handler = SIG_IGN;
-	else
-		sa_sigquit.sa_handler = SIG_DFL;
+	}
+	else if (sig == 1)
+	{
+		sa_sigint.sa_handler = signal_handler_exec;
+		sa_sigquit.sa_handler = signal_handler_exec;
+	}
 	sigaction(SIGINT, &sa_sigint, NULL);
 	sigaction(SIGQUIT, &sa_sigquit, NULL);
 }

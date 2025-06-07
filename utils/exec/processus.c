@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/03 17:30:06 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/07 17:06:12 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 	int				value_exit;
 
 	value_exit = 0;
-	setup_signal(0);
+	setup_signal(1);
 	if (*cmd->args[0] == '.' || *cmd->args[0] == '/')
 		value_exit = run_executable(cmd, envp);
 	else if (cmd->builtin == true)
@@ -65,7 +65,7 @@ void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 		perror("stat");
 	else if (S_ISREG(data.st_mode) == 0)
 	{
-		is_a_directory(cmd->args[0]);
+		command_not_found(cmd->args[0]);
 		value_exit = 126;
 	}
 	else if (execve(path, cmd->args, envp) == -1)

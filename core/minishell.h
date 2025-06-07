@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/29 13:22:01 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/07 14:30:56 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@
 # define ERR_NUM_EXIT	"minishell: exit: numeric argument required\n"
 # define ERR_ARG_EXIT	"minishell: exit: too many arguments\n"
 # define ERR_NO_ARG		"error, don't entry argument"
+# define ERR_PIPE		"minishell: syntax error near unexpected token '|'\n"
+# define ERR_QUOTE		"minishell: syntax error: unexpected end of quote\n"
+# define ERR_REDIR		"minishell: syntax error near unexpected token '>'\n"
+# define ERR_NO_FILE	"minishell: syntax error near unexpected token 'newline'\n"
 # define SUCCESS 		0
 # define FAIL 			1
 # define CODE_FAIL 		1
@@ -84,15 +88,15 @@ typedef struct s_parse_redir
 
 /* parsing */
 int							ft_split_len(char **split);
-void						parse(char *line, t_cmd	*cmd);
+int							parse(char *line, t_cmd	*cmd);
 int							len_list(t_parse_redir *redir);
 char						**ft_divide_char(char *line, char sep);
 char						**ft_divide_str(char *line, char *sep);
 int							ft_strcmp_minishell(char *s1, char *s2);
 void						add_split(t_cmd *current_cmd, char **split);
-void						fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
+int							fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
 void						parse_redir(t_parse_redir *redir, char **pipe);
-void						add_redir(t_cmd *current_cmd, char *file,
+int							add_redir(t_cmd *current_cmd, char *file,
 								t_token_type type);
 void						tab_to_redir_char(t_parse_redir *redir,
 								char **pipe, char sep);
@@ -204,5 +208,6 @@ void						free_t_cmd_nowhere(t_cmd *cmd);
 int							wait_and_free(int status, t_cmd *cmd);
 int							wait_children(int status, t_cmd *cmd);
 void						safe_free_exec(t_cmd *cmd, char **envp, char *path);
+void						print_cmd_list(t_cmd *cmd);
 
 #endif

@@ -6,11 +6,79 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/06/04 11:19:15 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/06 12:18:36 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
+
+const char *token_type_to_str(t_token_type type)
+{
+	if (type == REDIRECT_IN)
+		return ("<");
+	if (type == REDIRECT_OUT)
+		return (">");
+	if (type == REDIRECT_APPEND)
+		return (">>");
+	if (type == HEREDOC)
+		return ("<<");
+	return ("UNKNOWN");
+}
+
+void	print_redirs(t_redir *redir, const char *label)
+{
+	int	i = 0;
+
+	printf("  └─ %s redirs:\n", label);
+	while (redir)
+	{
+		printf("     [%d] type: %-7s | file: \"%s\"\n",
+			i++, token_type_to_str(redir->type),
+			redir->file ? redir->file : "(null)");
+		redir = redir->next;
+	}
+	if (i == 0)
+		printf("     [empty]\n");
+}
+
+void	print_args(char **args)
+{
+	int i = 0;
+
+	if (!args)
+	{
+		printf("  └─ args: NULL\n");
+		return;
+	}
+	printf("  └─ args:\n");
+	while (args[i])
+	{
+		printf("     [%d] \"%s\"\n", i, args[i]);
+		i++;
+	}
+	if (i == 0)
+		printf("     [empty args]\n");
+}
+
+void	print_cmd_list(t_cmd *cmd)
+{
+	int index = 0;
+	t_cmd *current = cmd;
+
+	while (current)
+	{
+		printf("🔹 Node %d of t_cmd:\n", index++);
+		print_args(current->args);
+		print_redirs(current->infile, "infile");
+		print_redirs(current->outfile, "outfile");
+		printf("  └─ builtin: %s\n", current->builtin ? "true" : "false");
+		printf("  └─ pid: %d\n", current->pid);
+		printf("  └─ has prev: %s | has next: %s\n",
+			current->prev ? "yes" : "no", current->next ? "yes" : "no");
+		printf("────────────────────────────────────────\n");
+		current = current->next;
+	}
+}
 
 int	is_built_in(char *str)
 {
@@ -39,6 +107,8 @@ static void	find_built_in(t_cmd *cmd)
 	t_cmd	*current;
 
 	current = cmd;
+	if (current == NULL)
+		return ;
 	while (current != NULL)
 	{
 		if (is_built_in(current->args[0]) == SUCCESS)
@@ -54,6 +124,7 @@ int	wait_children(int status, t_cmd *cmd)
 	t_cmd	*current;
 	int		last_status;
 	int		cur_status;
+	int		signal_num;
 
 	current = cmd;
 	last_status = status;
@@ -64,11 +135,17 @@ int	wait_children(int status, t_cmd *cmd)
 		if (WIFEXITED(cur_status))
 			last_status = WEXITSTATUS(cur_status);
 		else if (WIFSIGNALED(cur_status))
-			last_status = 128 + WTERMSIG(cur_status);
+		{
+			signal_num = WTERMSIG(cur_status);
+			// if (signal_num == SIGINT)
+			// 	write(1, "\n", 1);
+			if (signal_num == SIGQUIT)
+				write(1, "Quit (core dumped)\n", 19);
+			last_status = 128 + signal_num;
+		}
 		current = current->next;
 	}
-	free_t_cmd(cmd);
-	return (last_status % 255);
+	return (free_t_cmd(cmd), last_status % 255);
 }
 
 int	is_special_build_in_parent(char **cmd)
@@ -91,6 +168,7 @@ int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 	expand_and_trim_cmd(cmd, env, last_status);
 	prev_fd = STDIN_FILENO;
 	current = cmd;
+	setup_signal(1);
 	if (current->next == NULL && is_special_build_in_parent(current->args) == 0)
 		return (exec_builtin(current, env), free_t_cmd(current), 0);
 	while (current != NULL)
