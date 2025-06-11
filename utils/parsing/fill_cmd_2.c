@@ -61,7 +61,7 @@ int	add_redir(t_cmd *current_cmd, char *file, t_token_type type)
 
 	if (file == NULL)
 		return (1);
-	split = ft_split(file, ' ');
+	split = ft_divide_char(file, ' ');
 	if (type == REDIRECT_APPEND || type == REDIRECT_OUT)
 	{
 		add_redir_outfile(current_cmd, split[0], type);
@@ -71,7 +71,12 @@ int	add_redir(t_cmd *current_cmd, char *file, t_token_type type)
 		add_redir_infile(current_cmd, split[0], type);
 	}
 	if (split[1] != NULL)
-		add_split(current_cmd, split);
+	{
+		if (current_cmd->args == NULL)
+			current_cmd->args = ft_strndup_split(split, 1);
+		else
+			add_split(current_cmd, split);
+	}
 	clean_split(split);
 	return (0);
 }

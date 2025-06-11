@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:18:04 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 03:53:19 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/09 14:12:05 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ int	name_var_valid(char *str)
 	int	i;
 
 	i = 0;
+	if (str == NULL)
+		return (0);
 	if (ft_isalpha(str[i]) == 0 && str[i] != '_')
 		return (0);
 	i++;

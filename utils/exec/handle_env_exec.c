@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 12:10:09 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/23 19:28:25 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 18:35:44 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ static char	*join_key_and_value(char *key, char *value)
 	int		i;
 	int		j;
 
-	res = malloc((ft_strlen(key) + ft_strlen(value) + 2) * sizeof(char));
+	if (value == NULL)
+		res = malloc((ft_strlen(key) + 2) * sizeof(char));
+	else
+		res = malloc((ft_strlen(key) + ft_strlen(value) + 2) * sizeof(char));
 	i = 0;
 	j = 0;
 	while (key[i] != '\0')
@@ -49,15 +52,13 @@ static char	*join_key_and_value(char *key, char *value)
 	return (res);
 }
 
-char	**env_tab_char(t_env **env, char *path_cmd)
+char	**env_tab_char(t_env **env)
 {
 	int		size;
 	char	**tab_char;
 	int		i;
 	t_env	*current;
 
-	if (path_cmd == NULL)
-		return (NULL);
 	size = size_struct_env(env);
 	tab_char = malloc((size + 1) * sizeof(char *));
 	i = 0;

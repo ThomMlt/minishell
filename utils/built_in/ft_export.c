@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 20:18:37 by thomas            #+#    #+#             */
-/*   Updated: 2025/06/06 17:54:39 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/09 14:55:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,15 @@ static void	add_var_to_env(char *key, char *value, t_env **env)
 		*env = new_node;
 }
 
+void	print_export_error(char *before)
+{
+	ft_putstr_fd("minishell: export: ", 2);
+	ft_putstr_fd("\'", 2);
+	ft_putstr_fd(before, 2);
+	ft_putstr_fd("\'", 2);
+	ft_putstr_fd(" :not a valid identifier\n", 2);
+}
+
 static int	add_export(t_env **env, t_cmd *cmd)
 {
 	int		i;
@@ -81,9 +90,10 @@ static int	add_export(t_env **env, t_cmd *cmd)
 		after = get_after_egal(cmd->args[i]);
 		if (name_var_valid(before) == 0)
 		{
-			ft_printf("minishell: export: '%s' :not a valid identifier\n",
-				before);
-			return (EXIT_FAILURE);
+			if (before == NULL)
+				before = ft_strdup("=");
+			print_export_error(before);
+			return (free(before), free(after), EXIT_FAILURE);
 		}
 		else
 			add_var_to_env(before, after, env);

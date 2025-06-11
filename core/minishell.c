@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:33 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/06 12:17:59 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 21:09:38 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static void	exit_minishell(t_env **env, t_cmd *cmd, char *line)
 {
+	ft_putstr_fd("exit\n", 1);
 	free_t_cmd(cmd);
 	free_env(env);
 	free(line);
@@ -55,7 +56,3 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 	}
 }
-
-/*a faire encore : affichage correcte des signaux en cas de commande bloquante
-- ctrl +c doit quitter tous les here doc et doit ne pas rentrer dans l'exec
-*/

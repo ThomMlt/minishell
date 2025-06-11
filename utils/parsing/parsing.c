@@ -28,7 +28,7 @@ int	parse(char *line, t_cmd *cmd)
 
 	if (line == NULL)
 		return (1);
-	if (line[0] == '\0')
+	if (line[0] == '\0' || is_only_spaces(line) == 1)
 		return (1);
 	if (check_if_valid_pipe(line, '|') == 1)
 		return (ft_putstr_fd(ERR_PIPE, 2), 1);

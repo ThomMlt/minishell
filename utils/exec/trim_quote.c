@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 07:06:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/12 17:53:51 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/08 16:30:21 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	trim_quotes(t_cmd *cmd)
 	int		i;
 
 	current = cmd;
-	while (current != NULL)
+	while (current != NULL && current->args != NULL)
 	{
 		i = 0;
 		while (current->args[i] != NULL)

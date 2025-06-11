@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/04 11:14:17 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 20:02:08 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	ft_check_atoll(const char *str, int *err)
 			*err = -1;
 		i++;
 	}
-	return ((int)((res * (unsigned long long)neg) % 255));
+	return ((int)((res * (unsigned long long)neg) % 256));
 }
 
 void	exit_code(t_cmd *cmd, t_env **env, int exit_code, int do_exit)

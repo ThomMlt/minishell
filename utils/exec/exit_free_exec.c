@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:00:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/06 17:03:30 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/08 17:36:58 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,11 @@ void	free_t_redir(t_redir *list)
 	{
 		if (list->type == HEREDOC)
 		{
-			if (unlink(list->file) == -1)
-				perror("unlink error");
+			if (access(list->file, F_OK) == 0)
+			{
+				if (unlink(list->file) == -1)
+					perror("unlink error");
+			}
 			free(list->file);
 		}
 		else
@@ -66,7 +69,6 @@ int	wait_and_free(int status, t_cmd *cmd)
 	if (cmd != NULL)
 	{
 		last_status = wait_children(status, cmd);
-		// free_t_cmd(cmd);
 	}
 	return (last_status);
 }

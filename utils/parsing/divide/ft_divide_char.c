@@ -75,7 +75,7 @@ void	divide(char *line, char **result, char sep)
 	{
 		if (line[i] == '\"' || line[i] == '\'')
 			i = check_quote_closed(line, i + 1, line[i]); // there was a + 1 here, idk why but maybe it's usefull maybe not
-		if (line[i] == sep && line[i + 1] != sep && line[i - 1] != sep) //invalid read here (line[i - 1] read before the string when i = 0)
+		if (line[i] == sep && line[i + 1] != sep && (i == 0 || line[i - 1] != sep))
 		{
 			result[index] = add_chunk(line, start, i - 1);
 			result[index + 1] = add_sep(sep);

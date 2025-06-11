@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 16:25:36 by tmillot           #+#    #+#             */
-/*   Updated: 2025/05/20 21:35:54 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 10:23:27 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static int	open_infile(char *file)
 	fd = open(file, O_RDONLY);
 	if (fd == -1)
 	{
-		if (access(file, R_OK) == -1)
-			permission_denied(file);
-		else if (access(file, F_OK) == -1)
+		if (access(file, F_OK) == -1)
 			no_such_file_or_directory(file);
+		else if (access(file, R_OK) == -1)
+			permission_denied(file);
 		else
 			error_message(file);
 	}

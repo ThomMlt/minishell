@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 06:57:23 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/05/23 18:08:20 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/08 17:39:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_cmd	*init_cmd(void)
 	cmd->next = NULL;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
+	cmd->builtin = false;
 	cmd->prev = NULL;
 	return (cmd);
 }

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 18:44:45 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/04 11:42:54 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/09 14:48:32 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,12 @@ char	*get_before_egal(char *str)
 	char	*res;
 
 	i = 0;
+	res = NULL;
 	while (str[i] && str[i] != '=')
 		i++;
 	len = i;
-	res = ft_strndup(str, (size_t)len);
+	if (len != 0)
+		res = ft_strndup(str, (size_t)len);
 	return (res);
 }
 

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/17 10:48:05 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/05 17:08:25 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 18:09:00 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	is_only_spaces(char *str)
 			return (0);
 		i++;
 	}
-	return (1); // La chaîne ne contient que des espaces/tabs ou est vide
+	return (1);
 }
 
 void	remove_space(t_cmd *current_cmd)
@@ -114,12 +114,17 @@ int	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
 			if (add_redir(current_cmd, current_redir->line[i + 1],
 					get_type(current_redir->line[i])) == 1)
 				return (1);
+			if (current_cmd->args != NULL)
+				remove_space(current_cmd);
 			i += 2;
 		}
 		else
 		{
- 			current_cmd->args = ft_divide_char(current_redir->line[i], ' ');
-			remove_space(current_cmd);
+			if (current_redir->line[i][0] != '\0')
+			{
+ 				current_cmd->args = ft_divide_char(current_redir->line[i], ' ');
+				remove_space(current_cmd);
+			}
 			i++;
 		}
 	}

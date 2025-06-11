@@ -6,57 +6,38 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 15:25:30 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/07 17:14:08 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/11 10:59:38 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
 
-int	check_expand_quote(int *quote, char c)
-{
-	if (c == '\'' && *quote != D_QUOTE)
-		return (*quote = S_QUOTE, 1);
-	else if (c == '\"' && *quote != S_QUOTE)
-		return (*quote = D_QUOTE, 1);
-	return (0);
-}
-
-static int	sep_var_name(char c)
-{
-	if (c == ' ' || c == '.' || c == '+' || c == '-' || c == '^' || c == ','
-		|| c == '*' || c == '/' || c == '%' || c == '=' || c == '\"'
-		|| c == '\0')
-		return (0);
-	return (1);
-}
-
 static char	*get_value_env(char *arg, t_env **env, int *index)
 {
-	char	*value;
-	char	*name;
+	char	*string;
 	int		start;
+	int		length;
 	t_env	*current;
 
-	start = *index + 1;
-	name = NULL;
+	*index += 1;
+	start = *index;
 	current = *env;
-	value = ft_strdup("");
-	if (ft_isdigit(arg[start]) == 1)
-		return ((*index) += 2, value);
-	while (sep_var_name(arg[*index]) == 1 && arg[*index] != '\0')
+	while (ft_isalnum(arg[*index]) != 0 || arg[*index] == '_')
 		*index += 1;
-	name = ft_substr(arg, start, (*index - start));
-	while (current != NULL)
-	{
-		if (ft_strcmp(name, current->key) == 0)
-		{
-			free(value);
-			value = ft_strdup(current->value);
-			break ;
-		}
+	string = ft_substr(arg, start, (*index - start));
+	length = ft_strlen(string);
+	while (current && ft_strncmp(string, current->key, length) != 0)
 		current = current->next;
+	free(string);
+	if (current && current->value)
+	{
+		start = 0;
+		length = ft_strlen(current->value);
+		string = ft_substr(current->value, start, length);
 	}
-	return (free(name), value);
+	else
+		string = ft_strdup("");
+	return (string);
 }
 
 void	expand_arg(char **arg, t_env **env, int last_status, int *index)
@@ -75,17 +56,17 @@ void	expand_arg(char **arg, t_env **env, int last_status, int *index)
 		str_to_expand = ft_itoa(last_status);
 		*index += 2;
 	}
-	else if (sep_var_name((*arg)[*index + 1]) == 1)
+	else if (sep_var_name((*arg)[*index + 1]) == 0)
 		str_to_expand = get_value_env((*arg), env, index);
 	end_str = ft_substr((*arg), *index, (ft_strlen((*arg)) - *index));
 	first_join = ft_strjoin(before_dollar, str_to_expand);
 	free((*arg));
 	(*arg) = ft_strjoin(first_join, end_str);
-	*index = ft_strlen(str_to_expand) + *index - 1;
 	free(before_dollar);
 	free(str_to_expand);
 	free(end_str);
 	free(first_join);
+	*index = -1;
 }
 
 void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
@@ -96,7 +77,7 @@ void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
 	int			j;
 
 	current = cmd;
-	while (current != NULL)
+	while (current != NULL && current->args != NULL)
 	{
 		i = 0;
 		while (current->args[i] != NULL)
@@ -106,10 +87,10 @@ void	handling_dollars(t_cmd *cmd, t_env **env, int last_status)
 			while (current->args[i][j] != '\0')
 			{
 				check_expand_quote(&quote, current->args[i][j]);
-				if (current->args[i][j] == '$' && quote != S_QUOTE) // && (current->args[i][j + 1] != '\0' || current->args[i + 1] != NULL)
+				if (current->args[i][j] == '$' && quote != S_QUOTE
+					&& (sep_var_name(current->args[i][j + 1]) == 0))
 					expand_arg(&current->args[i], env, last_status, &j);
-				else
-					j++;
+				j++;
 			}
 			i++;
 		}

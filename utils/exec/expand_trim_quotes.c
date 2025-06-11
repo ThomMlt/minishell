@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:15:48 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/07 14:51:36 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/11 13:01:35 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,45 @@ void	expand_trim_redir(t_redir *redirection, t_env **env, int last_status)
 	}
 }
 
-void	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
+int	if_dollars(t_cmd *cmd)
 {
 	t_cmd	*current;
+	int		i;
+	int		j;
 
 	current = cmd;
+	while (current != NULL)
+	{
+		i = 0;
+		while (current->args[i] != NULL)
+		{
+			j = 0;
+			while (current->args[i][j] != '\0')
+			{
+				if (current->args[i][j] == '$')
+					return (0);
+				j++;
+			}
+			i++;
+		}
+		current = current->next;
+	}
+	return (1);
+}
+
+int	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
+{
+	t_cmd	*current;
+	int		dollars_before;
+	int		dollars_after;
+
+	current = cmd;
+	dollars_before = if_dollars(cmd);
 	handling_dollars(cmd, env, last_status);
 	trim_quotes(cmd);
+	dollars_after = if_dollars(cmd);
+	if (dollars_before == 0 && dollars_after == 1)
+		split_first_args(cmd);
 	while (current != NULL)
 	{
 		if (current->infile != NULL)
@@ -50,4 +82,8 @@ void	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
 			expand_trim_redir(current->outfile, env, last_status);
 		current = current->next;
 	}
+	if ((cmd->args == NULL || cmd->args[0][0] == '\0') && cmd->infile == NULL
+		&& cmd->outfile == NULL)
+		return (1);
+	return (0);
 }

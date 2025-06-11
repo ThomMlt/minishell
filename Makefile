@@ -6,7 +6,7 @@
 #    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 15:23:37 by lidbaha           #+#    #+#              #
-#    Updated: 2025/05/27 17:10:10 by tmillot          ###   ########.fr        #
+#    Updated: 2025/06/11 10:49:59 by tmillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,12 +41,14 @@ SOURCES = core/minishell.c \
 		  utils/exec/handling_dollars.c \
 		  utils/exec/open_redirection.c \
 		  utils/split/ft_strdup_split.c \
+		  utils/split/ft_strndup_split.c \
 		  utils/exec/speciale_built_in.c \
 		  utils/exec/error_message_exec.c \
 		  utils/exec/expand_trim_quotes.c \
 		  utils/built_in/utils_built_in.c \
 		  utils/exec/redirect_management.c \
 		  utils/strcmp/ft_strcmp_minishell.c \
+		  utils/exec/handling_dollars_utils.c \
 		  utils/parsing/divide/ft_divide_str.c \
 		  utils/parsing/divide/ft_divide_char.c \
 

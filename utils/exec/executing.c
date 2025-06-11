@@ -6,79 +6,11 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/06/06 12:18:36 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/10 21:08:52 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../core/minishell.h"
-
-const char *token_type_to_str(t_token_type type)
-{
-	if (type == REDIRECT_IN)
-		return ("<");
-	if (type == REDIRECT_OUT)
-		return (">");
-	if (type == REDIRECT_APPEND)
-		return (">>");
-	if (type == HEREDOC)
-		return ("<<");
-	return ("UNKNOWN");
-}
-
-void	print_redirs(t_redir *redir, const char *label)
-{
-	int	i = 0;
-
-	printf("  └─ %s redirs:\n", label);
-	while (redir)
-	{
-		printf("     [%d] type: %-7s | file: \"%s\"\n",
-			i++, token_type_to_str(redir->type),
-			redir->file ? redir->file : "(null)");
-		redir = redir->next;
-	}
-	if (i == 0)
-		printf("     [empty]\n");
-}
-
-void	print_args(char **args)
-{
-	int i = 0;
-
-	if (!args)
-	{
-		printf("  └─ args: NULL\n");
-		return;
-	}
-	printf("  └─ args:\n");
-	while (args[i])
-	{
-		printf("     [%d] \"%s\"\n", i, args[i]);
-		i++;
-	}
-	if (i == 0)
-		printf("     [empty args]\n");
-}
-
-void	print_cmd_list(t_cmd *cmd)
-{
-	int index = 0;
-	t_cmd *current = cmd;
-
-	while (current)
-	{
-		printf("🔹 Node %d of t_cmd:\n", index++);
-		print_args(current->args);
-		print_redirs(current->infile, "infile");
-		print_redirs(current->outfile, "outfile");
-		printf("  └─ builtin: %s\n", current->builtin ? "true" : "false");
-		printf("  └─ pid: %d\n", current->pid);
-		printf("  └─ has prev: %s | has next: %s\n",
-			current->prev ? "yes" : "no", current->next ? "yes" : "no");
-		printf("────────────────────────────────────────\n");
-		current = current->next;
-	}
-}
 
 int	is_built_in(char *str)
 {
@@ -111,8 +43,11 @@ static void	find_built_in(t_cmd *cmd)
 		return ;
 	while (current != NULL)
 	{
-		if (is_built_in(current->args[0]) == SUCCESS)
-			current->builtin = true;
+		if (current->args != NULL)
+		{
+			if (is_built_in(current->args[0]) == SUCCESS)
+				current->builtin = true;
+		}
 		else
 			current->builtin = false;
 		current = current->next;
@@ -137,19 +72,19 @@ int	wait_children(int status, t_cmd *cmd)
 		else if (WIFSIGNALED(cur_status))
 		{
 			signal_num = WTERMSIG(cur_status);
-			// if (signal_num == SIGINT)
-			// 	write(1, "\n", 1);
 			if (signal_num == SIGQUIT)
 				write(1, "Quit (core dumped)\n", 19);
 			last_status = 128 + signal_num;
 		}
 		current = current->next;
 	}
-	return (free_t_cmd(cmd), last_status % 255);
+	return (free_t_cmd(cmd), last_status % 256);
 }
 
-int	is_special_build_in_parent(char **cmd)
+int	is_special_build_parent(char **cmd)
 {
+	if (cmd == NULL || *cmd == NULL)
+		return (1);
 	if (ft_strncmp(cmd[0], "cd", 3) == 0
 		|| ft_strncmp(cmd[0], "export", 7) == 0
 		|| ft_strncmp(cmd[0], "unset", 6) == 0
@@ -158,19 +93,37 @@ int	is_special_build_in_parent(char **cmd)
 	return (1);
 }
 
+int	ft_exec_special_builtin(t_env **env, t_cmd *cmd)
+{
+	int	status;
+
+	status = exec_builtin(cmd, env);
+	free_t_cmd(cmd);
+	return (status);
+}
+
+int	set_and_expand(t_cmd *cmd, t_env **env, int last_status)
+{
+	int	value;
+
+	value = expand_and_trim_cmd(cmd, env, last_status);
+	find_built_in(cmd);
+	return (value);
+}
+
 int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 	int		pipe_fd[2];
 	int		prev_fd;
 
-	find_built_in(cmd);
-	expand_and_trim_cmd(cmd, env, last_status);
+	if (set_and_expand(cmd, env, last_status) == 1)
+		return (free_t_cmd(cmd), last_status);
 	prev_fd = STDIN_FILENO;
 	current = cmd;
 	setup_signal(1);
-	if (current->next == NULL && is_special_build_in_parent(current->args) == 0)
-		return (exec_builtin(current, env), free_t_cmd(current), 0);
+	if (current->next == NULL && is_special_build_parent(current->args) == 0)
+		return (ft_exec_special_builtin(env, current));
 	while (current != NULL)
 	{
 		if (pipe(pipe_fd) == -1)

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/07 14:30:56 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/11 11:52:54 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <signal.h>
+# include <errno.h>
 
 # define LL_MAX			9223372036854775807ULL
 # define ERR_NUM_EXIT	"minishell: exit: numeric argument required\n"
@@ -105,6 +106,7 @@ void						tab_to_redir_str(t_parse_redir *redir,
 
 /* checking */
 int							check_quotes(char *line);
+int							is_only_spaces(char *str);
 int							check_if_valid_redir(char *line);
 int							check_if_valid_pipe(char *line, char sep);
 int							check_quote_closed(char *line,
@@ -126,6 +128,7 @@ void						clean_redir(t_parse_redir *redir);
 
 /* utils */
 char						**ft_strdup_split(char **tab);
+char						**ft_strndup_split(char **tab, int i);
 
 /* Handle here doc, return name file */
 char						*get_here_doc(char *str);
@@ -161,10 +164,12 @@ void						find_and_trim_quote(char **arg);
 int							check_expand_quote(int *quote, char c);
 void						handling_dollars(t_cmd *cmd, t_env **env,
 								int last_status);
-void						expand_and_trim_cmd(t_cmd *cmd, t_env **env,
+int							expand_and_trim_cmd(t_cmd *cmd, t_env **env,
 								int last_status);
 void						expand_arg(char **arg, t_env **env,
 								int last_status, int *index);
+int							sep_var_name(char c);
+void						split_first_args(t_cmd *cmd);
 
 /* error message during executing */
 void						error_message(char *str);
@@ -179,7 +184,7 @@ int							exec_builtin(t_cmd *cmd, t_env **env);
 int							ft_exec(t_cmd *cmd, t_env **env, int exit_code);
 
 /* build env for execution */
-char						**env_tab_char(t_env **env, char *path_cmd);
+char						**env_tab_char(t_env **env);
 
 /* process */
 void						ft_exit_child(int code_status, char *path_cmd,
