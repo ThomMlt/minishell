@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/08 19:29:10 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/16 14:37:35 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,13 @@ void	made_new_file(int *fd, char **name)
 	char		*str;
 	char		*number_file;
 
-	number_file = ft_itoa(nb_file);
-	str = ft_strjoin("/tmp/here_doc_", number_file);
-	*name = ft_strdup(str);
-	*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	while (1)
+	{
+		number_file = ft_itoa(nb_file);
+		str = ft_strjoin("/tmp/here_doc_", number_file);
+		*name = ft_strdup(str);
+		*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+	}
 	free(str);
 	free(number_file);
 	nb_file++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executing.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/06/10 21:08:52 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:57:59 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	is_built_in(char *str)
 		return (FAIL);
 }
 
-static void	find_built_in(t_cmd *cmd)
+void	find_built_in(t_cmd *cmd)
 {
 	t_cmd	*current;
 
@@ -81,44 +81,13 @@ int	wait_children(int status, t_cmd *cmd)
 	return (free_t_cmd(cmd), last_status % 256);
 }
 
-int	is_special_build_parent(char **cmd)
-{
-	if (cmd == NULL || *cmd == NULL)
-		return (1);
-	if (ft_strncmp(cmd[0], "cd", 3) == 0
-		|| ft_strncmp(cmd[0], "export", 7) == 0
-		|| ft_strncmp(cmd[0], "unset", 6) == 0
-		|| ft_strncmp(cmd[0], "exit", 5) == 0)
-		return (0);
-	return (1);
-}
-
-int	ft_exec_special_builtin(t_env **env, t_cmd *cmd)
-{
-	int	status;
-
-	status = exec_builtin(cmd, env);
-	free_t_cmd(cmd);
-	return (status);
-}
-
-int	set_and_expand(t_cmd *cmd, t_env **env, int last_status)
-{
-	int	value;
-
-	value = expand_and_trim_cmd(cmd, env, last_status);
-	find_built_in(cmd);
-	return (value);
-}
-
 int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 {
 	t_cmd	*current;
 	int		pipe_fd[2];
 	int		prev_fd;
 
-	if (set_and_expand(cmd, env, last_status) == 1)
-		return (free_t_cmd(cmd), last_status);
+	set_and_expand(cmd, env, last_status);
 	prev_fd = STDIN_FILENO;
 	current = cmd;
 	setup_signal(1);

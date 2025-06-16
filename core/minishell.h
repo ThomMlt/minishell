@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/11 11:52:54 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 16:03:48 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@
 # define ERR_PIPE		"minishell: syntax error near unexpected token '|'\n"
 # define ERR_QUOTE		"minishell: syntax error: unexpected end of quote\n"
 # define ERR_REDIR		"minishell: syntax error near unexpected token '>'\n"
-# define ERR_NO_FILE	"minishell: syntax error near unexpected token 'newline'\n"
+# define ERR_NO_FILE	\
+					"minishell: syntax error near unexpected token 'newline'\n"
 # define SUCCESS 		0
 # define FAIL 			1
 # define CODE_FAIL 		1
@@ -91,8 +92,6 @@ typedef struct s_parse_redir
 int							ft_split_len(char **split);
 int							parse(char *line, t_cmd	*cmd);
 int							len_list(t_parse_redir *redir);
-char						**ft_divide_char(char *line, char sep);
-char						**ft_divide_str(char *line, char *sep);
 int							ft_strcmp_minishell(char *s1, char *s2);
 void						add_split(t_cmd *current_cmd, char **split);
 int							fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
@@ -104,11 +103,18 @@ void						tab_to_redir_char(t_parse_redir *redir,
 void						tab_to_redir_str(t_parse_redir *redir,
 								char **pipe, char *sep);
 
+/* divide */
+int							divide_size(char *line, char sep);
+char						**ft_divide_char(char *line, char sep);
+char						**ft_divide_str(char *line, char *sep);
+char						*add_chunk(char *line, int start, int end);
+char						**ft_divide_char_all(char *line, char sep);
+
 /* checking */
 int							check_quotes(char *line);
 int							is_only_spaces(char *str);
+int							check_if_valid_pipe(char *line);
 int							check_if_valid_redir(char *line);
-int							check_if_valid_pipe(char *line, char sep);
 int							check_quote_closed(char *line,
 								int index, char quote);
 
@@ -178,6 +184,9 @@ void						command_not_found(char *cmd);
 void						permission_denied(char *file);
 void						no_such_file_or_directory(char *cmd);
 
+/* signals */
+void						setup_signal_heredoc(void);
+
 /* executing */
 int							is_special_built_in(char *cmd);
 int							exec_builtin(t_cmd *cmd, t_env **env);
@@ -207,12 +216,15 @@ void						setup_signal(int sig);
 void						free_t_cmd(t_cmd *cmd);
 void						free_path(char *path_cmd);
 void						free_tab_char(char **tab);
-void						setup_signal_heredoc(void);
 void						free_t_redir(t_redir *list);
 void						free_t_cmd_nowhere(t_cmd *cmd);
 int							wait_and_free(int status, t_cmd *cmd);
 int							wait_children(int status, t_cmd *cmd);
 void						safe_free_exec(t_cmd *cmd, char **envp, char *path);
-void						print_cmd_list(t_cmd *cmd);
+int							is_special_build_parent(char **cmd);
+int							ft_exec_special_builtin(t_env **env, t_cmd *cmd);
+int							set_and_expand(t_cmd *cmd, t_env **env,
+								int last_status);
+void						find_built_in(t_cmd *cmd);
 
 #endif

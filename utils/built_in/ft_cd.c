@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 18:56:32 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/05 13:15:02 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:57:48 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,11 @@ int	ft_cd(t_env **env, t_cmd *cmd)
 		if (path == NULL)
 			return (error_cd("HOME not set", 0), CODE_FAIL);
 	}
+	if (access(path, F_OK) == -1)
+		return (error_cd(path, 1), free(path), CODE_FAIL);
+	else if (access(path, W_OK) == -1)
+		return (error_cd(path, 2), free(path), CODE_FAIL);
 	if (chdir(path) == -1)
-	{
-		if (access(cmd->args[1], F_OK) == -1)
-			return (error_cd(cmd->args[1], 1), free(path), CODE_FAIL);
-		else if (access(cmd->args[1], W_OK) == -1)
-			return (error_cd(cmd->args[1], 2), free(path), CODE_FAIL);
-	}
+		perror("minishell: cd");
 	return (update_pwd(env, currentpwd), free(path), CODE_SUCCESS);
 }

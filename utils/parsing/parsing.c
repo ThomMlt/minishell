@@ -21,21 +21,42 @@ char	*skip_quotes(char *line, char quote)
 	return (line);
 }
 
-int	parse(char *line, t_cmd *cmd)
+char	*tab_to_space(char *line)
+{
+	char	*new;
+	int		i;
+
+	new = malloc(sizeof(char) * (ft_strlen(line) + 1));
+	i = 0;
+	while (line[i] != '\0')
+	{
+		if (line[i] == '\t')
+			new[i] = ' ';
+		else
+			new[i] = line[i];
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
+}
+
+int	parse(char *input, t_cmd *cmd)
 {
 	char			**pipe;
+	char			*line;
 	t_parse_redir	*redir;
 
-	if (line == NULL)
+	if (input == NULL)
 		return (1);
-	if (line[0] == '\0' || is_only_spaces(line) == 1)
+	if (input[0] == '\0' || is_only_spaces(input) == 1)
 		return (1);
-	if (check_if_valid_pipe(line, '|') == 1)
-		return (ft_putstr_fd(ERR_PIPE, 2), 1);
-	if (check_if_valid_redir(line) == 1)
-		return (ft_putstr_fd(ERR_REDIR, 2), 1);
-	if (check_quotes(line) == -1)
+	if (check_quotes(input) == -1)
 		return (ft_putstr_fd(ERR_QUOTE, 2), 1);
+	if (check_if_valid_pipe(input) == 1)
+		return (ft_putstr_fd(ERR_PIPE, 2), 2);
+	if (check_if_valid_redir(input) == 1)
+		return (ft_putstr_fd(ERR_REDIR, 2), 2);
+	line = tab_to_space(input);
 	pipe = ft_divide_char(line, '|');
 	redir = init_redir();
 	parse_redir(redir, pipe);
@@ -45,7 +66,5 @@ int	parse(char *line, t_cmd *cmd)
 		clean_redir(redir);
 		return (ft_putstr_fd(ERR_NO_FILE, 2), 1);
 	}
-	clean_pipe(pipe);
-	clean_redir(redir);
-	return (0);
+	return (clean_pipe(pipe), clean_redir(redir), free(line), 0);
 }

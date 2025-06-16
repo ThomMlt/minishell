@@ -31,8 +31,8 @@ void	add_split(t_cmd *current_cmd, char **split)
 	int		index;
 	char	**new;
 
-	new = malloc(sizeof(char *)
-			* (ft_split_len(split) + ft_split_len(current_cmd->args)));
+	new = malloc(sizeof(char *) * (ft_split_len(split)
+				+ ft_split_len(current_cmd->args)));
 	i = 0;
 	index = 0;
 	while (current_cmd->args[i] != NULL)
@@ -80,7 +80,8 @@ void	remove_space(t_cmd *current_cmd)
 	size = 0;
 	while (current_cmd->args[i] != NULL)
 	{
-		if (current_cmd->args[i][0] != ' ' && !is_only_spaces(current_cmd->args[i]))
+		if (current_cmd->args[i][0] != ' '
+			&& !is_only_spaces(current_cmd->args[i]))
 			size++;
 		i++;
 	}
@@ -89,7 +90,8 @@ void	remove_space(t_cmd *current_cmd)
 	size = 0;
 	while (current_cmd->args[i] != NULL)
 	{
-		if (current_cmd->args[i][0] != ' ' && !is_only_spaces(current_cmd->args[i]))
+		if (current_cmd->args[i][0] != ' '
+			&& !is_only_spaces(current_cmd->args[i]))
 		{
 			new[size] = ft_strdup(current_cmd->args[i]);
 			size++;
@@ -122,7 +124,8 @@ int	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
 		{
 			if (current_redir->line[i][0] != '\0')
 			{
- 				current_cmd->args = ft_divide_char(current_redir->line[i], ' ');
+				current_cmd->args = ft_divide_char_all(current_redir->line[i],
+						' ');
 				remove_space(current_cmd);
 			}
 			i++;
@@ -154,9 +157,8 @@ int	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 				current_cmd->next = NULL;
 			current_redir = current_redir->next;
 		}
-		else
-			if (current_redir->next != NULL)
-				current_redir = current_redir->next;
+		else if (current_redir->next != NULL)
+			current_redir = current_redir->next;
 	}
 	return (0);
 }

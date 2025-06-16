@@ -6,7 +6,7 @@
 #    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/17 15:23:37 by lidbaha           #+#    #+#              #
-#    Updated: 2025/06/11 10:49:59 by tmillot          ###   ########.fr        #
+#    Updated: 2025/06/12 16:28:25 by tmillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SOURCES = core/minishell.c \
 		  utils/exec/exit_free_exec.c \
 		  utils/parsing/parse_redir.c \
 		  utils/exec/handle_env_exec.c \
+		  utils/exec/executing_utils.c \
 		  utils/exec/signals_handler.c \
 		  utils/parsing/parse_redir_2.c \
 		  utils/exec/handling_dollars.c \
@@ -51,6 +52,7 @@ SOURCES = core/minishell.c \
 		  utils/exec/handling_dollars_utils.c \
 		  utils/parsing/divide/ft_divide_str.c \
 		  utils/parsing/divide/ft_divide_char.c \
+		  utils/parsing/divide/ft_divide_char_all.c \
 
 CC = cc
 

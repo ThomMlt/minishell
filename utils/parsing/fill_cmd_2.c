@@ -61,7 +61,7 @@ int	add_redir(t_cmd *current_cmd, char *file, t_token_type type)
 
 	if (file == NULL)
 		return (1);
-	split = ft_divide_char(file, ' ');
+	split = ft_divide_char_all(file, ' ');
 	if (type == REDIRECT_APPEND || type == REDIRECT_OUT)
 	{
 		add_redir_outfile(current_cmd, split[0], type);

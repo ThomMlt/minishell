@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:33 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/10 21:09:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:57:40 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,14 @@ static void	exit_minishell(t_env **env, t_cmd *cmd, char *line)
 	free(line);
 }
 
-static int	signal_to_false(void)
+static int	signal_to_false(int last_status)
 {
 	if (g_signal == true)
+	{
 		g_signal = false;
-	return (130);
+		return (130);
+	}
+	return (last_status);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -43,8 +46,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		setup_signal(0);
 		line = readline("Minishell:~$ ");
-		if (g_signal == true)
-			last_status = signal_to_false();
+		last_status = signal_to_false(last_status);
 		add_history(line);
 		cmd = init_cmd();
 		if (parse(line, cmd) == 0)

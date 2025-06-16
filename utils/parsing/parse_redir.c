@@ -80,10 +80,49 @@ void	parse_lst_redir_str(t_parse_redir *redir, char *sep)
 	}
 }
 
+void	remove_redir_spaces(t_parse_redir *redir)
+{
+	t_parse_redir	*current_redir;
+	char			**new;
+	int				size;
+	int				i;
+
+	current_redir = redir;
+	while (current_redir != NULL)
+	{
+		i = 0;
+		size = 0;
+		while (current_redir->line[i] != NULL)
+		{
+			if (!is_only_spaces(current_redir->line[i]))
+				size++;
+			i++;
+		}
+		new = malloc(sizeof(char *) * (size + 1));
+		i = 0;
+		size = 0;
+		while (current_redir->line[i] != NULL)
+		{
+			if (!is_only_spaces(current_redir->line[i]))
+			{
+				new[size] = ft_strdup(current_redir->line[i]);
+				size++;
+			}
+			i++;
+		}
+		new[size] = NULL;
+		clean_split(current_redir->line);
+		current_redir->line = ft_strdup_split(new);
+		clean_split(new);
+		current_redir = current_redir->next;
+	}
+}
+
 void	parse_redir(t_parse_redir *redir, char **pipe)
 {
 	tab_to_redir_char(redir, pipe, '>');
 	parse_lst_redir_char(redir);
 	parse_lst_redir_str(redir, ">>");
 	parse_lst_redir_str(redir, "<<");
+	remove_redir_spaces(redir);
 }

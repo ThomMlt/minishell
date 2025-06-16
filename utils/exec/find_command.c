@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:55:42 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/10 20:18:27 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:58:02 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ char	*find_cmd_path(t_env **env, t_cmd *cmd)
 	cmd_slash = ft_strjoin("/", cmd->args[0]);
 	if (path_env == NULL)
 		return (free(path_env), free(cmd_slash), ft_strdup(cmd->args[0]));
-	// if (path_env == NULL || cmd->args[0][0] == '\0')
-	// 	return (free(path_env), free(cmd_slash),
-	// 		command_not_found(cmd->args[0]), NULL);
 	possible_path = ft_split(path_env, ':');
 	while (possible_path[++i] != NULL)
 	{

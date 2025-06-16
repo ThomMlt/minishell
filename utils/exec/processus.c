@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   processus.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/10 21:01:14 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/16 15:08:38 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,25 @@ int	do_execute(char *path, char **envp, t_cmd *cmd)
 	return (CODE_FAIL);
 }
 
+int	exec_builtin_child(t_cmd *cmd, t_env **env, char **envp)
+{
+	if (ft_strcmp(cmd->args[0], "echo") == 0)
+		return (ft_echo(cmd));
+	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
+		return (ft_pwd());
+	else if (ft_strcmp(cmd->args[0], "env") == 0)
+		return (ft_env(env, cmd));
+	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+		return (ft_cd(env, cmd));
+	else if (ft_strcmp(cmd->args[0], "export") == 0)
+		return (ft_export(env, cmd));
+	else if (ft_strcmp(cmd->args[0], "unset") == 0)
+		return (ft_unset(cmd, env));
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+		return (clean_split(envp), ft_exit(cmd, env, 0));
+	return (1);
+}
+
 void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 {
 	int				value_exit;
@@ -77,7 +96,7 @@ void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)
 	if (*cmd->args[0] == '.' || *cmd->args[0] == '/')
 		value_exit = run_executable(cmd, envp);
 	else if (cmd->builtin == true)
-		value_exit = exec_builtin(cmd, env);
+		value_exit = exec_builtin_child(cmd, env, envp);
 	else if (path == NULL)
 		value_exit = 127;
 	else

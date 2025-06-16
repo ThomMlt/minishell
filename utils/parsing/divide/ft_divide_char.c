@@ -22,7 +22,7 @@ int	divide_size(char *line, char sep)
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\"' || line[i] == '\'')
-			i = check_quote_closed(line, i + 1, line[i]) + 1;
+			i = check_quote_closed(line, i + 1, line[i]);
 		if (line[i] == sep && line[i + 1] != sep)
 			result++;
 		if (line[i] != '\0')
@@ -74,8 +74,9 @@ void	divide(char *line, char **result, char sep)
 	while (line[++i] != '\0')
 	{
 		if (line[i] == '\"' || line[i] == '\'')
-			i = check_quote_closed(line, i + 1, line[i]); // there was a + 1 here, idk why but maybe it's usefull maybe not
-		if (line[i] == sep && line[i + 1] != sep && (i == 0 || line[i - 1] != sep))
+			i = check_quote_closed(line, i + 1, line[i]);
+		if (line[i] == sep && line[i + 1] != sep
+			&& (i == 0 || line[i - 1] != sep))
 		{
 			result[index] = add_chunk(line, start, i - 1);
 			result[index + 1] = add_sep(sep);
@@ -96,6 +97,8 @@ char	**ft_divide_char(char *line, char sep)
 	char	**result;
 
 	result = malloc(sizeof(char *) * (divide_size(line, sep) * 2 + 2));
+	if (!result)
+		return (NULL);
 	divide(line, result, sep);
 	return (result);
 }

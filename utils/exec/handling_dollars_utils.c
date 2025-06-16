@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handling_dollars_utils.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 10:33:21 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/11 12:46:00 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:58:04 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,33 @@ int	sep_var_name(char c)
 	return (0);
 }
 
-void add_split_expand(t_cmd *current_cmd, char **split)
+void	add_split_expand(t_cmd *current_cmd, char **split)
 {
-    int i;
-    int index;
-    char **new;
+	int		i;
+	int		index;
+	char	**new;
 
-    new = malloc(sizeof(char *)
+	new = malloc(sizeof(char *)
 			* (ft_split_len(split) + ft_split_len(current_cmd->args) + 1));
-    i = 0;
-    index = 0;
-    while (split[i] != NULL)
-    {
-        new[index] = ft_strdup(split[i]);
-        index++;
-        i++;
-    }
-    i = 1;
-    while (current_cmd->args[i] != NULL)
-    {
-        new[index] = ft_strdup(current_cmd->args[i]);
-        index++;
-        i++;
-    }
-    new[index] = NULL;
-    clean_split(current_cmd->args);
-    current_cmd->args = ft_strdup_split(new);
-    clean_split(new);
+	i = 0;
+	index = 0;
+	while (split[i] != NULL)
+	{
+		new[index] = ft_strdup(split[i]);
+		index++;
+		i++;
+	}
+	i = 1;
+	while (current_cmd->args[i] != NULL)
+	{
+		new[index] = ft_strdup(current_cmd->args[i]);
+		index++;
+		i++;
+	}
+	new[index] = NULL;
+	clean_split(current_cmd->args);
+	current_cmd->args = ft_strdup_split(new);
+	clean_split(new);
 }
 
 void	split_first_args(t_cmd *cmd)

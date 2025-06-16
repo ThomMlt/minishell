@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_trim_quotes.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:15:48 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/11 13:01:35 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/13 15:58:01 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ int	if_dollars(t_cmd *cmd)
 	int		j;
 
 	current = cmd;
+	if (cmd->args == NULL)
+		return (1);
 	while (current != NULL)
 	{
 		i = 0;
@@ -82,8 +84,5 @@ int	expand_and_trim_cmd(t_cmd *cmd, t_env **env, int last_status)
 			expand_trim_redir(current->outfile, env, last_status);
 		current = current->next;
 	}
-	if ((cmd->args == NULL || cmd->args[0][0] == '\0') && cmd->infile == NULL
-		&& cmd->outfile == NULL)
-		return (1);
 	return (0);
 }
