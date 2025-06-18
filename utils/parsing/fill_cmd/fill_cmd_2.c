@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "../../../core/minishell.h"
 
 t_redir	*add_redir_node(char *file, t_token_type type)
 {
@@ -18,7 +18,11 @@ t_redir	*add_redir_node(char *file, t_token_type type)
 
 	node = init_cmd_redir();
 	if (type == HEREDOC)
+	{
 		node->file = get_here_doc(file);
+		if (node->file == NULL)
+			return (clean_t_redir(node), NULL);
+	}
 	else
 		node->file = ft_strdup(file);
 	node->type = type;
@@ -40,19 +44,26 @@ void	add_redir_outfile(t_cmd *current_cmd, char *file, t_token_type type)
 	}
 }
 
-void	add_redir_infile(t_cmd *current_cmd, char *file, t_token_type type)
+int	add_redir_infile(t_cmd *current_cmd, char *file, t_token_type type)
 {
 	t_redir	*temp;
 
 	if (current_cmd->infile == NULL)
+	{
 		current_cmd->infile = add_redir_node(file, type);
+		if (current_cmd->infile == NULL)
+			return (1);
+	}
 	else
 	{
 		temp = current_cmd->infile;
 		while (temp->next != NULL)
 			temp = temp->next;
 		temp->next = add_redir_node(file, type);
+		if (temp->next == NULL)
+			return (1);
 	}
+	return (0);
 }
 
 int	add_redir(t_cmd *current_cmd, char *file, t_token_type type)
@@ -68,7 +79,8 @@ int	add_redir(t_cmd *current_cmd, char *file, t_token_type type)
 	}
 	else if (type == REDIRECT_IN || type == HEREDOC)
 	{
-		add_redir_infile(current_cmd, split[0], type);
+		if (add_redir_infile(current_cmd, split[0], type) == 1)
+			return (clean_split(split), 2);
 	}
 	if (split[1] != NULL)
 	{

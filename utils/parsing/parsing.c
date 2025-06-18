@@ -40,31 +40,41 @@ char	*tab_to_space(char *line)
 	return (new);
 }
 
+int	checks(char *input)
+{
+	if (check_quotes(input) == -1)
+		return (ft_putstr_fd(ERR_QUOTE, 2), 2);
+	if (check_if_valid_pipe(input) == 1)
+		return (ft_putstr_fd(ERR_PIPE, 2), 2);
+	if (check_if_valid_redir(input) == 1)
+		return (ft_putstr_fd(ERR_REDIR, 2), 2);
+	return (0);
+}
+
 int	parse(char *input, t_cmd *cmd)
 {
 	char			**pipe;
 	char			*line;
+	int				status;
 	t_parse_redir	*redir;
 
 	if (input == NULL)
 		return (1);
 	if (input[0] == '\0' || is_only_spaces(input) == 1)
 		return (1);
-	if (check_quotes(input) == -1)
-		return (ft_putstr_fd(ERR_QUOTE, 2), 1);
-	if (check_if_valid_pipe(input) == 1)
-		return (ft_putstr_fd(ERR_PIPE, 2), 2);
-	if (check_if_valid_redir(input) == 1)
-		return (ft_putstr_fd(ERR_REDIR, 2), 2);
+	if (checks(input) == 2)
+		return (2);
 	line = tab_to_space(input);
 	pipe = ft_divide_char(line, '|');
 	redir = init_redir();
 	parse_redir(redir, pipe);
-	if (fill_t_cmd(redir, cmd) == 1)
+	status = fill_t_cmd(redir, cmd);
+	if (status != 0)
 	{
-		clean_pipe(pipe);
-		clean_redir(redir);
-		return (ft_putstr_fd(ERR_NO_FILE, 2), 1);
+		(clean_pipe(pipe), clean_redir(redir));
+		if (status == 1)
+			return (ft_putstr_fd(ERR_NO_FILE, 2), free(line), 1);
+		return (free(line), 1);
 	}
 	return (clean_pipe(pipe), clean_redir(redir), free(line), 0);
 }

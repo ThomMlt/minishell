@@ -12,6 +12,22 @@
 
 #include "../../core/minishell.h"
 
+int	is_only_spaces(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (1);
+	while (str[i])
+	{
+		if (str[i] != ' ' && str[i] != '\t')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	check_quote_closed(char *line, int index, char quote)
 {
 	while (line[index] != '\0')
@@ -27,43 +43,22 @@ int	check_quote_closed(char *line, int index, char quote)
 
 int	check_if_valid_redir(char *line)
 {
-	int	i;
-	int	word;
-	int	redir;
-	int	first_redir;
+	t_check_redir	*check_redir;
 
-	i = 0;
-	word = 0;
-	redir = 0;
-	first_redir = 1;
-	while (line[i] != '\0')
+	check_redir = malloc(sizeof(t_check_redir));
+	check_redir->i = 0;
+	check_redir->word = 0;
+	check_redir->redir = 0;
+	check_redir->first_redir = 1;
+	while (line[check_redir->i] != '\0')
 	{
-		if (line[i] == '\'' || line[i] == '\"')
-		{
-			i = check_quote_closed(line, i + 1, line[i]);
-			word = 1;
-		}
-		else
-		{
-			if (line[i] == '>' || line[i] == '<')
-			{
-				redir = 1;
-				if (line[i + 1] == line[i] && line[i + 2] == line[i])
-					return (1);
-				if (first_redir == 1)
-					first_redir = 0;
-				else if (word == 0 && line[i - 1] != line[i])
-					return (1);
-				word = 0;
-			}
-			else if (line[i] != ' ' && line[i] != '\t' && line[i] != '|')
-				word = 1;
-		}
-		i++;
+		if (valid_redir(line, check_redir) == 1)
+			return (free(check_redir), 1);
+		check_redir->i++;
 	}
-	if (redir == 1 && word == 0)
-		return (1);
-	return (0);
+	if (check_redir->redir == 1 && check_redir->word == 0)
+		return (free(check_redir), 1);
+	return (free(check_redir), 0);
 }
 
 int	check_if_valid_pipe(char *line)
@@ -77,29 +72,11 @@ int	check_if_valid_pipe(char *line)
 	pipe = 0;
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\'' || line[i] == '\"')
-		{
-			i = check_quote_closed(line, i + 1, line[i]);
-			word = 1;
-		}
-		else
-		{
-			if (line[i] != ' ' && line[i] != '\t' && line[i] != '|'
-				&& line[i] != '>' && line[i] != '<')
-				word = 1;
-			else if (line[i] == '|')
-			{
-				pipe = 1;
-				if (word == 0)
-					return (1);
-				word = 0;
-			}
-		}
+		if (valid_pipe(line, &word, &i, &pipe) == 1)
+			return (1);
 		i++;
 	}
-	if (pipe == 1 && word == 0)
-		return (1);
-	return (0);
+	return (pipe == 1 && word == 0);
 }
 
 int	check_quotes(char *line)

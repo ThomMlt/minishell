@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "../../../core/minishell.h"
 
 char	**tab_join(t_parse_redir *redir)
 {
@@ -90,24 +90,13 @@ void	remove_redir_spaces(t_parse_redir *redir)
 	current_redir = redir;
 	while (current_redir != NULL)
 	{
+		new = malloc(sizeof(char *) * (redir_space_size(current_redir) + 1));
 		i = 0;
 		size = 0;
 		while (current_redir->line[i] != NULL)
 		{
 			if (!is_only_spaces(current_redir->line[i]))
-				size++;
-			i++;
-		}
-		new = malloc(sizeof(char *) * (size + 1));
-		i = 0;
-		size = 0;
-		while (current_redir->line[i] != NULL)
-		{
-			if (!is_only_spaces(current_redir->line[i]))
-			{
-				new[size] = ft_strdup(current_redir->line[i]);
-				size++;
-			}
+				new[size++] = ft_strdup(current_redir->line[i]);
 			i++;
 		}
 		new[size] = NULL;

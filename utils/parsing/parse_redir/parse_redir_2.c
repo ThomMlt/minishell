@@ -10,7 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "../../../core/minishell.h"
+
+int	redir_space_size(t_parse_redir	*current_redir)
+{
+	int	i;
+	int	size;
+
+	i = 0;
+	size = 0;
+	while (current_redir->line[i] != NULL)
+	{
+		if (!is_only_spaces(current_redir->line[i]))
+			size++;
+		i++;
+	}
+	return (size);
+}
 
 t_parse_redir	*add_list(char **line)
 {

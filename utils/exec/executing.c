@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 22:16:30 by thomas            #+#    #+#             */
-/*   Updated: 2025/06/13 15:57:59 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:14:50 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	ft_exec(t_cmd *cmd, t_env **env, int last_status)
 	current = cmd;
 	setup_signal(1);
 	if (current->next == NULL && is_special_build_parent(current->args) == 0)
-		return (ft_exec_special_builtin(env, current));
+		return (ft_exec_special_builtin(env, current, last_status));
 	while (current != NULL)
 	{
 		if (pipe(pipe_fd) == -1)

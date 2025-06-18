@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:31 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/13 16:03:48 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:15:34 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@
 # define LL_MAX			9223372036854775807ULL
 # define ERR_NUM_EXIT	"minishell: exit: numeric argument required\n"
 # define ERR_ARG_EXIT	"minishell: exit: too many arguments\n"
-# define ERR_NO_ARG		"error, don't entry argument"
-# define ERR_PIPE		"minishell: syntax error near unexpected token '|'\n"
+# define ERR_NO_ARG		"error, don't entry argument\n"
+# define ERR_PIPE		"minishell: syntax error near unexpected pipe\n"
 # define ERR_QUOTE		"minishell: syntax error: unexpected end of quote\n"
-# define ERR_REDIR		"minishell: syntax error near unexpected token '>'\n"
+# define ERR_REDIR		"minishell: syntax error near unexpected redirection\n"
 # define ERR_NO_FILE	\
 					"minishell: syntax error near unexpected token 'newline'\n"
 # define SUCCESS 		0
@@ -82,6 +82,14 @@ typedef struct s_env
 	struct s_env			*next;
 }							t_env;
 
+typedef struct s_check_redir
+{
+	int						i;
+	int						word;
+	int						redir;
+	int						first_redir;
+}							t_check_redir;
+
 typedef struct s_parse_redir
 {
 	char					**line;
@@ -90,12 +98,21 @@ typedef struct s_parse_redir
 
 /* parsing */
 int							ft_split_len(char **split);
+void						remove_space(t_cmd *c_cmd);
 int							parse(char *line, t_cmd	*cmd);
 int							len_list(t_parse_redir *redir);
+void						fill_t_cmd_next(t_cmd *current_cmd);
 int							ft_strcmp_minishell(char *s1, char *s2);
 void						add_split(t_cmd *current_cmd, char **split);
 int							fill_t_cmd(t_parse_redir *redir, t_cmd *cmd);
 void						parse_redir(t_parse_redir *redir, char **pipe);
+int							fill_line_n(t_cmd *current_cmd,
+								t_parse_redir *current_redir);
+int							fill_line(t_parse_redir *c_redir,
+								t_cmd *current_cmd);
+int							redir_space_size(t_parse_redir	*current_redir);
+void						fill_line_next(t_parse_redir *c_redir,
+								t_cmd *current_cmd, int i);
 int							add_redir(t_cmd *current_cmd, char *file,
 								t_token_type type);
 void						tab_to_redir_char(t_parse_redir *redir,
@@ -107,14 +124,19 @@ void						tab_to_redir_str(t_parse_redir *redir,
 int							divide_size(char *line, char sep);
 char						**ft_divide_char(char *line, char sep);
 char						**ft_divide_str(char *line, char *sep);
+int							divide_size_str(char *line, char *sep);
 char						*add_chunk(char *line, int start, int end);
 char						**ft_divide_char_all(char *line, char sep);
+void						divide_str(char *line, char **result, char *sep);
 
 /* checking */
 int							check_quotes(char *line);
 int							is_only_spaces(char *str);
 int							check_if_valid_pipe(char *line);
 int							check_if_valid_redir(char *line);
+int							valid_redir(char *line, t_check_redir *c_r);
+int							valid_pipe(char *line, int *word,
+								int *i, int *pipe);
 int							check_quote_closed(char *line,
 								int index, char quote);
 
@@ -130,6 +152,7 @@ char						*skip_quotes(char *line, char quote);
 void						clean_t_cmd(t_cmd *cmd);
 void						clean_pipe(char **pipe);
 void						clean_split(char **split);
+void						clean_t_redir(t_redir *redir);
 void						clean_redir(t_parse_redir *redir);
 
 /* utils */
@@ -176,6 +199,8 @@ void						expand_arg(char **arg, t_env **env,
 								int last_status, int *index);
 int							sep_var_name(char c);
 void						split_first_args(t_cmd *cmd);
+int							set_and_expand(t_cmd *cmd, t_env **env,
+								int last_status);
 
 /* error message during executing */
 void						error_message(char *str);
@@ -185,12 +210,22 @@ void						permission_denied(char *file);
 void						no_such_file_or_directory(char *cmd);
 
 /* signals */
+void						setup_signal(int sig);
 void						setup_signal_heredoc(void);
 
 /* executing */
+void						find_built_in(t_cmd *cmd);
 int							is_special_built_in(char *cmd);
-int							exec_builtin(t_cmd *cmd, t_env **env);
+int							is_special_build_parent(char **cmd);
+int							wait_and_free(int status, t_cmd *cmd);
+int							wait_children(int status, t_cmd *cmd);
 int							ft_exec(t_cmd *cmd, t_env **env, int exit_code);
+int							exec_builtin(t_cmd *cmd, t_env **env,
+								int last_status);
+int							ft_exec_special_builtin(t_env **env, t_cmd *cmd,
+								int last_status);
+int							exec_builtin_child(t_cmd *cmd, t_env **env,
+								char **envp);
 
 /* build env for execution */
 char						**env_tab_char(t_env **env);
@@ -212,19 +247,11 @@ int							redirect_management(t_cmd *cmd, int *pipe_fd,
 
 /* handle free execution */
 void						free_env(t_env **env);
-void						setup_signal(int sig);
 void						free_t_cmd(t_cmd *cmd);
 void						free_path(char *path_cmd);
 void						free_tab_char(char **tab);
 void						free_t_redir(t_redir *list);
 void						free_t_cmd_nowhere(t_cmd *cmd);
-int							wait_and_free(int status, t_cmd *cmd);
-int							wait_children(int status, t_cmd *cmd);
 void						safe_free_exec(t_cmd *cmd, char **envp, char *path);
-int							is_special_build_parent(char **cmd);
-int							ft_exec_special_builtin(t_env **env, t_cmd *cmd);
-int							set_and_expand(t_cmd *cmd, t_env **env,
-								int last_status);
-void						find_built_in(t_cmd *cmd);
 
 #endif

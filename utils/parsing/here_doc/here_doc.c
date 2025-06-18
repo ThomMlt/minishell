@@ -6,11 +6,11 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 21:46:35 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/16 14:37:35 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/16 19:52:23 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "../../../core/minishell.h"
 
 void	made_new_file(int *fd, char **name)
 {
@@ -18,13 +18,10 @@ void	made_new_file(int *fd, char **name)
 	char		*str;
 	char		*number_file;
 
-	while (1)
-	{
-		number_file = ft_itoa(nb_file);
-		str = ft_strjoin("/tmp/here_doc_", number_file);
-		*name = ft_strdup(str);
-		*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	}
+	number_file = ft_itoa(nb_file);
+	str = ft_strjoin("/tmp/here_doc_", number_file);
+	*name = ft_strdup(str);
+	*fd = open(*name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	free(str);
 	free(number_file);
 	nb_file++;
@@ -76,9 +73,17 @@ char	*get_here_doc(char *str)
 	file_name = NULL;
 	made_new_file(&here_doc_fd, &file_name);
 	if (here_doc_fd == -1)
-		return (ft_printf("error to create a tmp file\n"), NULL);
+	{
+		while (access(file_name, W_OK) == -1 || here_doc_fd == -1)
+		{
+			free(file_name);
+			made_new_file(&here_doc_fd, &file_name);
+		}
+	}
 	fill_here_doc_file(here_doc_fd, delimitor);
 	free(delimitor);
 	close(here_doc_fd);
+	if (g_signal == true)
+		return (free(file_name), NULL);
 	return (file_name);
 }

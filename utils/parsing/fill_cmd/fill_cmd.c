@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../core/minishell.h"
+#include "../../../core/minishell.h"
 
 t_token_type	get_type(char *str)
 {
@@ -54,23 +54,7 @@ void	add_split(t_cmd *current_cmd, char **split)
 	clean_split(new);
 }
 
-int	is_only_spaces(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (!str)
-		return (1);
-	while (str[i])
-	{
-		if (str[i] != ' ' && str[i] != '\t')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-void	remove_space(t_cmd *current_cmd)
+void	remove_space(t_cmd *c_cmd)
 {
 	char	**new;
 	int		size;
@@ -78,56 +62,49 @@ void	remove_space(t_cmd *current_cmd)
 
 	i = 0;
 	size = 0;
-	while (current_cmd->args[i] != NULL)
+	while (c_cmd->args[i] != NULL)
 	{
-		if (current_cmd->args[i][0] != ' '
-			&& !is_only_spaces(current_cmd->args[i]))
+		if (c_cmd->args[i][0] != ' ' && !is_only_spaces(c_cmd->args[i]))
 			size++;
 		i++;
 	}
 	new = malloc(sizeof(char *) * (size + 1));
 	i = 0;
 	size = 0;
-	while (current_cmd->args[i] != NULL)
+	while (c_cmd->args[i] != NULL)
 	{
-		if (current_cmd->args[i][0] != ' '
-			&& !is_only_spaces(current_cmd->args[i]))
-		{
-			new[size] = ft_strdup(current_cmd->args[i]);
-			size++;
-		}
+		if (c_cmd->args[i][0] != ' ' && !is_only_spaces(c_cmd->args[i]))
+			new[size++] = ft_strdup(c_cmd->args[i]);
 		i++;
 	}
 	new[size] = NULL;
-	clean_split(current_cmd->args);
-	current_cmd->args = ft_strdup_split(new);
+	clean_split(c_cmd->args);
+	c_cmd->args = ft_strdup_split(new);
 	clean_split(new);
 }
 
-int	fill_line(t_parse_redir *current_redir, t_cmd *current_cmd)
+int	fill_line(t_parse_redir *c_redir, t_cmd *current_cmd)
 {
 	int	i;
+	int	status;
 
 	i = 0;
-	while (current_redir->line[i] != NULL)
+	while (c_redir->line[i] != NULL)
 	{
-		if (get_type(current_redir->line[i]) != WORD)
+		if (get_type(c_redir->line[i]) != WORD)
 		{
-			if (add_redir(current_cmd, current_redir->line[i + 1],
-					get_type(current_redir->line[i])) == 1)
-				return (1);
+			status = add_redir(current_cmd, c_redir->line[i + 1],
+					get_type(c_redir->line[i]));
+			if (status != 0)
+				return (status);
 			if (current_cmd->args != NULL)
 				remove_space(current_cmd);
 			i += 2;
 		}
 		else
 		{
-			if (current_redir->line[i][0] != '\0')
-			{
-				current_cmd->args = ft_divide_char_all(current_redir->line[i],
-						' ');
-				remove_space(current_cmd);
-			}
+			if (c_redir->line[i][0] != '\0')
+				fill_line_next(c_redir, current_cmd, i);
 			i++;
 		}
 	}
@@ -139,26 +116,7 @@ int	fill_t_cmd(t_parse_redir *redir, t_cmd *cmd)
 	t_parse_redir	*current_redir;
 	t_cmd			*current_cmd;
 
-	current_redir = redir;
 	current_cmd = cmd;
-	while (current_redir != NULL)
-	{
-		if (current_redir->line[0][0] != '|')
-		{
-			if (fill_line(current_redir, current_cmd) == 1)
-				return (1);
-			if (current_redir->next != NULL)
-			{
-				current_cmd->next = init_cmd();
-				current_cmd->next->prev = current_cmd;
-				current_cmd = current_cmd->next;
-			}
-			else
-				current_cmd->next = NULL;
-			current_redir = current_redir->next;
-		}
-		else if (current_redir->next != NULL)
-			current_redir = current_redir->next;
-	}
-	return (0);
+	current_redir = redir;
+	return (fill_line_n(current_cmd, current_redir));
 }

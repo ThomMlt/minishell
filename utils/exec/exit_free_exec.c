@@ -66,10 +66,7 @@ int	wait_and_free(int status, t_cmd *cmd)
 	last_status = 0;
 	if (cmd == NULL)
 		return (status);
-	if (cmd != NULL)
-	{
-		last_status = wait_children(status, cmd);
-	}
+	last_status = wait_children(status, cmd);
 	return (last_status);
 }
 

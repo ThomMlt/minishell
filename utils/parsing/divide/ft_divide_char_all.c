@@ -30,19 +30,13 @@ void	divide_all(char *line, char **result, char sep)
 			if (i != 0)
 			{
 				if (line[i - 1] != sep)
-				{
-					result[index] = add_chunk(line, start, i - 1);
-					index++;
-				}
+					result[index++] = add_chunk(line, start, i - 1);
 			}
 			start = i + 1;
 		}
 	}
 	if (start < i && line[start] != sep)
-	{
-		result[index] = add_chunk(line, start, i - 1);
-		index++;
-	}
+		result[index++] = add_chunk(line, start, i - 1);
 	result[index] = NULL;
 }
 

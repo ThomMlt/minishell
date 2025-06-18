@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 18:56:32 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/13 15:57:48 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:37:31 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,13 @@ static void	error_cd(char *message, int type)
 		ft_putstr_fd(": No such file or directory", 2);
 	if (type == 2)
 		ft_putstr_fd(": Permission denied", 2);
-	ft_putstr_fd("\n", 2);
+	if (type == 3)
+	{
+		ft_putstr_fd(" ", 2);
+		perror(NULL);
+	}
+	if (type != 3)
+		ft_putstr_fd("\n", 2);
 }
 
 int	ft_cd(t_env **env, t_cmd *cmd)
@@ -86,9 +92,7 @@ int	ft_cd(t_env **env, t_cmd *cmd)
 	}
 	if (access(path, F_OK) == -1)
 		return (error_cd(path, 1), free(path), CODE_FAIL);
-	else if (access(path, W_OK) == -1)
-		return (error_cd(path, 2), free(path), CODE_FAIL);
 	if (chdir(path) == -1)
-		perror("minishell: cd");
+		return (error_cd(path, 3), free(path), 1);
 	return (update_pwd(env, currentpwd), free(path), CODE_SUCCESS);
 }

@@ -85,10 +85,7 @@ void	divide(char *line, char **result, char sep)
 		}
 	}
 	if (start < i)
-	{
-		result[index] = add_chunk(line, start, i - 1);
-		index++;
-	}
+		result[index++] = add_chunk(line, start, i - 1);
 	result[index] = NULL;
 }
 

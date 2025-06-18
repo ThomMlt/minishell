@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:58:31 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/16 15:08:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:06:47 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,15 @@ static int	run_executable(t_cmd *cmd, char **envp)
 {
 	struct stat	data;
 
-	if (access(cmd->args[0], F_OK) == -1)
+	if (ft_strncmp(cmd->args[0], "./", 2) == 0)
+	{
+		if (access(cmd->args[0], F_OK) == -1)
+			return (no_such_file_or_directory(cmd->args[0]), 127);
+	}
+	if (*cmd->args[0] == '.' && access(cmd->args[0], F_OK) == -1)
 		return (command_not_found(cmd->args[0]), 127);
+	if (access(cmd->args[0], F_OK) == -1)
+		return (no_such_file_or_directory(cmd->args[0]), 127);
 	if (access(cmd->args[0], X_OK) == -1)
 		return (permission_denied(cmd->args[0]), 126);
 	if (stat(cmd->args[0], &data) != 0)
@@ -29,7 +36,7 @@ static int	run_executable(t_cmd *cmd, char **envp)
 	return (CODE_FAIL);
 }
 
-int	exec_builtin(t_cmd *cmd, t_env **env)
+int	exec_builtin(t_cmd *cmd, t_env **env, int last_status)
 {
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		return (ft_echo(cmd));
@@ -44,7 +51,7 @@ int	exec_builtin(t_cmd *cmd, t_env **env)
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
 		return (ft_unset(cmd, env));
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return (ft_exit(cmd, env, 0));
+		return (ft_exit(cmd, env, last_status));
 	return (1);
 }
 
@@ -66,25 +73,6 @@ int	do_execute(char *path, char **envp, t_cmd *cmd)
 	else if (execve(path, cmd->args, envp) == -1)
 		perror("execve");
 	return (CODE_FAIL);
-}
-
-int	exec_builtin_child(t_cmd *cmd, t_env **env, char **envp)
-{
-	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		return (ft_echo(cmd));
-	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		return (ft_pwd());
-	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		return (ft_env(env, cmd));
-	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-		return (ft_cd(env, cmd));
-	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		return (ft_export(env, cmd));
-	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		return (ft_unset(cmd, env));
-	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return (clean_split(envp), ft_exit(cmd, env, 0));
-	return (1);
 }
 
 void	child_process(t_env **env, t_cmd *cmd, char **envp, char *path)

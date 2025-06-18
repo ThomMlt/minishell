@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 10:52:14 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/13 15:57:51 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:21:11 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int	ft_exit(t_cmd *cmd, t_env **env, int exit_status)
 
 	size = count_tab_char(cmd->args);
 	err = 0;
-	ft_putstr_fd("exit\n", 1);
+	if (cmd->next == NULL && cmd->prev == NULL)
+		ft_putstr_fd("exit\n", 1);
 	if (size >= 2)
 	{
 		exit_status = ft_check_atoll(cmd->args[1], &err);
@@ -79,5 +80,5 @@ int	ft_exit(t_cmd *cmd, t_env **env, int exit_status)
 		}
 	}
 	else
-		return (exit_code(cmd, env, 0, 0), 0);
+		return (exit_code(cmd, env, exit_status, 0), exit_status);
 }

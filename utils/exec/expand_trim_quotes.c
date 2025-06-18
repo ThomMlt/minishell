@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 12:15:48 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/13 15:58:01 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 10:15:24 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ int	if_dollars(t_cmd *cmd)
 	int		j;
 
 	current = cmd;
-	if (cmd->args == NULL)
-		return (1);
 	while (current != NULL)
 	{
 		i = 0;
+		if (current->args == NULL)
+			return (1);
 		while (current->args[i] != NULL)
 		{
 			j = 0;

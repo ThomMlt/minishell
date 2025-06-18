@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 16:26:09 by tmillot           #+#    #+#             */
-/*   Updated: 2025/06/13 15:57:59 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/17 11:15:12 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ int	is_special_build_parent(char **cmd)
 	return (1);
 }
 
-int	ft_exec_special_builtin(t_env **env, t_cmd *cmd)
+int	ft_exec_special_builtin(t_env **env, t_cmd *cmd, int last_status)
 {
 	int	status;
 
-	status = exec_builtin(cmd, env);
+	status = exec_builtin(cmd, env, last_status);
 	free_t_cmd(cmd);
 	return (status);
 }

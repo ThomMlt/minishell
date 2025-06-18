@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 15:23:33 by lidbaha           #+#    #+#             */
-/*   Updated: 2025/06/13 15:57:40 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/06/16 21:42:19 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,31 +30,60 @@ static int	signal_to_false(int last_status)
 	return (last_status);
 }
 
+void	arg(int argc, char **argv)
+{
+	if (argc > 1)
+	{
+		printf(ERR_NO_ARG);
+		exit(EXIT_FAILURE);
+	}
+	(void)argv;
+}
+
+static int	process_command(char *line, t_cmd *cmd,
+	t_env **env, int last_status)
+{
+	int	parsing_status;
+
+	add_history(line);
+	parsing_status = parse(line, cmd);
+	if (parsing_status == 0)
+		last_status = ft_exec(cmd, env, last_status);
+	else if (line == NULL)
+	{
+		exit_minishell(env, cmd, line);
+		exit(last_status);
+	}
+	else
+	{
+		last_status = parsing_status;
+		free_t_cmd(cmd);
+	}
+	free(line);
+	return (last_status);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_env	*env;
 	t_cmd	*cmd;
+	int		status;
 	int		last_status;
 
+	arg(argc, argv);
 	env = cpy_env(envp);
 	last_status = 0;
-	if (argc > 1)
-		return (printf(ERR_NO_ARG), 0);
-	(void)argv;
 	while (1)
 	{
 		setup_signal(0);
 		line = readline("Minishell:~$ ");
-		last_status = signal_to_false(last_status);
-		add_history(line);
+		status = signal_to_false(last_status);
+		if (status != 1)
+		{
+			last_status = status;
+		}
 		cmd = init_cmd();
-		if (parse(line, cmd) == 0)
-			last_status = ft_exec(cmd, &env, last_status);
-		else if (line == NULL)
-			return (exit_minishell(&env, cmd, line), last_status);
-		else
-			free_t_cmd(cmd);
-		free(line);
+		last_status = process_command(line, cmd, &env, last_status);
 	}
 }
