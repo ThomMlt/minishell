@@ -1,81 +1,115 @@
 Minishell
 
-Minishell est un projet de l'école 42 consistant à recréer un shell UNIX minimaliste, capable de lancer des commandes, gérer les redirections, les pipes, et quelques built-ins. Ce projet permet d'approfondir ses connaissances sur les processus, les signaux, la gestion de la mémoire, et les appels systèmes.
-🛠️ Fonctionnalités implémentées
-Built-ins pris en charge :
+Minishell is a project from 42 School that consists in building a simplified version of a Unix shell. The goal is to reproduce core behaviors of standard shells such as bash, while understanding process management, redirections, pipes, environment variables, and memory handling at a low level.
+🔧 Features
+✅ Built-in Commands Supported
 
-    cd
+- cd
 
-    echo (avec ou sans -n)
+- echo (with and without -n)
 
-    env
+- env
 
-    exit
+- exit
 
-    export
+- export
 
-    pwd
+- pwd
 
-    unset
+- unset
 
-Comportements du shell :
+🧩 Shell Behavior
 
-    Exécution de commandes avec ou sans chemin absolu.
+Execution of commands (built-ins and binaries) with or without absolute/relative paths.
 
-    Support des pipes (|) entre plusieurs commandes.
+Pipe management (|) between commands.
 
-    Gestion des redirections :
+Redirections:
 
-        Entrée : <
+- Input: <
 
-        Sortie : >
+- Output: >
 
-        Append : >>
+- Append: >>
 
-        Here-document : << (avec gestion des signaux dans ce contexte).
+- Here-document: << (with signal support inside the here_doc).
 
-    Expansions des variables d'environnement ($USER, $PATH, etc).
+    Environment variable expansion ($USER, $HOME, etc.).
 
-    Gestion des signaux :
+Signal handling:
 
-        Ctrl + C : interrompt la commande en cours.
+- Ctrl + C → interrupt current input.
 
-        Ctrl + \ : ignoré.
+- Ctrl + \ → ignored.
 
-        Ctrl + D : gère la fermeture propre du shell.
+- Ctrl + D → exits the shell (if input is empty).
 
-    Gestion des erreurs pour :
+    Error management:
 
-        Redirections invalides
+    - Unclosed quotes are caught and reported (but don’t cause a crash).
 
-        Commandes introuvables
+    - Invalid commands or redirections are properly handled.
 
-        Quotes non fermées (affichage d'une erreur sans provoquer de crash)
+🧠 Architecture
 
-🧠 Structure du projet
+The core of the shell is built around a chained list structure called t_cmd, where each node represents a command block separated by a pipe (|).
 
-Le cœur de l'implémentation repose sur une liste chaînée de commandes (t_cmd). Chaque nœud de cette liste représente une commande séparée par un pipe.
+Each t_cmd node contains:
 
-Chaque t_cmd contient :
+- A list of input redirections (t_redir *infile)
 
-    Une liste de redirections d'entrée (t_redir_in)
+- A list of output redirections (t_redir *outfile)
 
-    Une liste de redirections de sortie (t_redir_out)
+This structure allows:
 
-Cette structure permet de gérer un nombre illimité de redirections par commande, tout en gardant une architecture claire et modulaire.
-🚀 Détails supplémentaires
+    Unlimited redirections per command
 
-Bien que certaines fonctionnalités ne soient pas obligatoires, j'ai choisi d'en intégrer quelques-unes supplémentaires pour améliorer la robustesse du shell, comme :
+    Clean separation of parsing and execution stages
 
-    La gestion des signaux dans les here_doc
+    Easier memory management and debugging
 
-    La gestion d’erreurs dans certains cas non spécifiés (ex : quotes non fermées)
+⚙️ Memory and Leak Management
 
-⚠️ Attention cependant : il est crucial de ne pas ajouter de comportements non demandés qui pourraient entraîner des divergences avec les attentes du sujet. Il faut avant tout éviter les segfaults, les fuites mémoire, et rester conforme à la norme POSIX dans la mesure du possible.
-🧪 Tests et vérifications
+Minishell includes tools to ensure leak-free and proper resource management:
+.valgrindrc
 
-    Utilisation de Valgrind pour s'assurer de l'absence de fuites mémoire.
+This configuration file allows you to run valgrind with all the necessary flags to track:
 
-    Tests avec bash et sh pour comparer les comportements standards.
+    Memory leaks
 
-    Vérification de la gestion des redirections combinées et des expansions dans différents contextes.
+    File descriptor misuse
+
+    Leaks in child processes
+
+    Proper closure of all allocated resources
+
+To use:
+
+valgrind ./minishell
+
+(assuming the .valgrindrc is in your home directory or properly referenced)
+std.supp
+
+A custom suppression file used to filter out:
+
+    Leaks caused by the readline library (known and not fixable)
+
+    Leaks coming from system commands executed via /bin/ls, /bin/echo, etc.
+
+This keeps your valgrind output clean and focused on issues within your codebase, not external libraries.
+⚠️ Notes
+
+While certain behaviors are not required by the subject (such as fully managing invalid syntax like unclosed quotes or unfinished pipes), it's still important to avoid crashes and leaks. For example:
+
+    Unclosed quotes should return a proper error message.
+
+    Invalid redirections should be handled gracefully.
+
+Additional features (such as signal handling inside here_doc) are implemented beyond the strict requirements for better user experience and robustness.
+🧪 Testing
+
+    Extensive testing with both built-ins and system binaries.
+
+    Comparison with bash behavior for edge cases.
+
+    Memory and file descriptor checks using Valgrind and custom suppression rules.
