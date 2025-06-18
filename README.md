@@ -1,6 +1,7 @@
 Minishell
 
 Minishell is a project from 42 School that consists in building a simplified version of a Unix shell. The goal is to reproduce core behaviors of standard shells such as bash, while understanding process management, redirections, pipes, environment variables, and memory handling at a low level.
+
 🔧 Features :
 
 ✅ Built-in Commands Supported
